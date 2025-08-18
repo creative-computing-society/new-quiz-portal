@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"log"
 	"os"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,10 +18,9 @@ type Collection struct {
 
 var (
 	// Declaring DB
-	DATABSE *mongo.Database
+	DATABASE *mongo.Database
 
 	//Declaring Collection to used in our portal
-	QuestionDB Collection
 	AUTH Collection
 	Registeration_Questions Collection
 	Registeration_Responses Collection
@@ -49,8 +49,19 @@ func Init() error{
     return errors.New("DB.Init: client.Ping\n" + err.Error())
   	}
 
-	
+	log.Println("Successfully Conected to Mongo....")
 
-	// return  nil
+	DATABASE = client.Database("Recruitments_2025")
+
+
+	Registeration_Questions  = Collection{DATABASE.Collection("reg_ques"), ctx}
+	AUTH  = Collection{DATABASE.Collection("auth"), ctx}
+
+	Registeration_Responses = Collection{DATABASE.Collection("reg_responses"), ctx}
+	Quiz_Questions = Collection{DATABASE.Collection("quiz_ques"), ctx}
+	Quiz_Responses = Collection{DATABASE.Collection("quiz_responses"), ctx}
+	Quiz_Answers = Collection{DATABASE.Collection("quiz_answers"), ctx}
+	return  nil
 
 }
+
