@@ -8,6 +8,7 @@ type (
 	UID *string
 	QID *string
 	SID *jwt.Token
+	OID *string
 )
 
 type AuthUser struct {

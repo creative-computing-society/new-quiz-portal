@@ -1,6 +1,6 @@
 package models
 
-type Question struct {
+type Questions struct {
 	QuestionID   QID    `bson:"questionID"`
 	QuestionType bool   `bson:"questionType"`
 	Question     string `bson:"regQuestions"`
