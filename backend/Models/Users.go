@@ -7,23 +7,16 @@ import (
 type (
 	UID *string
 	QID *string
-) 
+	SID *jwt.Token
+)
 
-
-type AuthUser struct{
-    UserId UID
-	Email string
-	SessionToken *jwt.Token
+type AuthUser struct {
+	UserId       UID    `bson:"userID"`
+	Email        string `bson:"userEmail"`
+	SessionToken SID    `bson:"sessionToken"`
 }
 
-
-
-type RespUser struct{
-	UserID UID
-	RegAnswers []Answer
+type RespUser struct {
+	UserID     UID      `bson:"userID"`
+	RegAnswers []Answer `bson:"answers"`
 }
-
-
-
-
-

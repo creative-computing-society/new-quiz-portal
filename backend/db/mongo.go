@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	"context"
@@ -32,8 +32,6 @@ var (
 
 func Init() error {
 
-	// Not complete yet.
-
 	ctx := context.Background()
 	uri := os.Getenv("MONGOURI")
 
@@ -66,7 +64,7 @@ func Init() error {
 
 }
 
-func (db *Collection) sync(bsonM bson.M, entry any) error {
+func (db *Collection) Sync(bsonM bson.M, entry any) error {
 	result, err := db.Coll.ReplaceOne(db.Context, bsonM, entry)
 	if err != nil {
 		return errors.New("Error: DB.syncBson error\n" + err.Error())
@@ -79,11 +77,11 @@ func (db *Collection) sync(bsonM bson.M, entry any) error {
 	return nil
 }
 
-func (db *Collection) syncTryHard(bsonM bson.M, entry any, maxTries byte) error {
+func (db *Collection) SyncTryHard(bsonM bson.M, entry any, maxTries byte) error {
 	var tries byte = 0
 
 sync:
-	if err := db.sync(bsonM, entry); err != nil {
+	if err := db.Sync(bsonM, entry); err != nil {
 		if tries > maxTries {
 			return errors.New("DB.syncBsonTryHard: Error in DB.syncBson, Max Tries reached\n" + err.Error())
 		}
@@ -94,7 +92,7 @@ sync:
 	return nil
 }
 
-func (db *Collection) getExists(bsonM bson.M, out any) (bool, error) {
+func (db *Collection) GetExists(bsonM bson.M, out any) (bool, error) {
 	result := db.Coll.FindOne(db.Context, bsonM)
 	err := result.Err()
 
@@ -113,8 +111,8 @@ func (db *Collection) getExists(bsonM bson.M, out any) (bool, error) {
 	return true, nil
 }
 
-func (db *Collection) get(bsonM bson.M, out any) error {
-	exists, err := db.getExists(bsonM, out)
+func (db *Collection) Get(bsonM bson.M, out any) error {
+	exists, err := db.GetExists(bsonM, out)
 	if !exists {
 		return errors.New("DB.get: document does not exist")
 	}
@@ -122,5 +120,5 @@ func (db *Collection) get(bsonM bson.M, out any) error {
 }
 
 func (db *Collection) exists(bsonM bson.M) (bool, error) {
-	return db.getExists(bsonM, nil)
+	return db.GetExists(bsonM, nil)
 }
