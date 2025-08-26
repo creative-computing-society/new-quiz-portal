@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Registration Question</title>
+</head>
+<body>
+  <h2>Add a Registration Question</h2>
+  <form action="/admin/add-reg-question" method="POST">
+    <label>Question:</label><input type="text" name="question"><br>
+    <label>Question Type (true/false):</label><input type="text" name="questiontype"><br>
+    <button type="submit">Add Question</button>
+  </form>
+  {{ if .Message }} <p style="color:green">{{ .Message }}</p> {{ end }}
+  {{ if .Error }} <p style="color:red">{{ .Error }}</p> {{ end }}
+</body>
+</html>

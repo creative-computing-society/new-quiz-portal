@@ -5,10 +5,10 @@ import (
 )
 
 type (
-	UID *string
-	QID *string
+	UID *[7]byte
+	QID *[7]byte
 	SID *jwt.Token
-	OID *string
+	OID *[7]byte
 )
 
 type AuthUser struct {

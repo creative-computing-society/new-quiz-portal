@@ -31,7 +31,7 @@ var (
 )
 
 func Init() error {
-
+	log.Println("MONGO INIT ON HUA")
 	ctx := context.Background()
 	uri := os.Getenv("MONGOURI")
 

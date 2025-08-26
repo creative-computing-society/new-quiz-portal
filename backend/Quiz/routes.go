@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SubmitForm(c *gin.Context) {
+func SubmitQuiz(c *gin.Context) {
 	// submit form
 	var Resp models.RespUser
 	err := c.ShouldBindJSON(&Resp)
@@ -26,6 +26,6 @@ func SubmitForm(c *gin.Context) {
 
 }
 
-func GetAllQues(c *gin.Context) {
+func GetQuizQues(c *gin.Context) {
 	// get ques from mongo and send to frontend
 }

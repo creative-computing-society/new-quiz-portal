@@ -2,6 +2,7 @@ package registerationform
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	models "ccs.quizportal/Models"
@@ -28,4 +29,10 @@ func SubmitForm(c *gin.Context) {
 
 func GetAllQues(c *gin.Context) {
 	// get ques from mongo and send to frontend
+	questions , err := GetRegQuestions()
+	if(err!=nil){
+		c.JSON(http.StatusInternalServerError , gin.H{"error":"Failed to fetch registeration questions , sad :/"})
+		log.Fatal("reg ques nhi mile")
+	}
+	c.JSON(http.StatusOK,gin.H{"regQuestions":questions})
 }

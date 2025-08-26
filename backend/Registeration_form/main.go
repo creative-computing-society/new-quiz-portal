@@ -6,10 +6,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func getQuestions() ([]models.Questions, error) {
+func GetRegQuestions() ([]models.Questions, error) {
 
 	var questions []models.Questions
-	cursor, err := db.Registeration_Questions.Coll.Find(db.Registeration_Questions.Context, bson.M{})
+cursor, err := db.Registeration_Questions.Coll.Find(db.Registeration_Questions.Context, bson.M{})
 
 	if err != nil {
 		return nil, err
