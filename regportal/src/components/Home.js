@@ -1,8 +1,10 @@
 import React from "react";
 
+const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:2117";
+
 export default function Home() {
   const handleRegister = () => {
-    window.location.href = "http://localhost:8080/auth/google";
+    window.location.href = `${API_BASE}/auth/google`;
   };
 
   return (
