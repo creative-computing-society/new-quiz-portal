@@ -11,3 +11,8 @@ type Answer struct {
 	QuestionType bool   `bson:"questionType"`
 	Answer       string `bson:"regAnswers"`
 } // return from frontend and put in mongo
+
+type RegResponseDb struct {
+	UserID    UID      `bson:"userID"`
+	Responses RespUser `bson:"response_reg"`
+}

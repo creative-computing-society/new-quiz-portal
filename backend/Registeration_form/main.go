@@ -1,15 +1,19 @@
 package registerationform
 
 import (
+	"net/http"
+
+	login "ccs.quizportal/Login"
 	models "ccs.quizportal/Models"
 	"ccs.quizportal/db"
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
 func GetRegQuestions() ([]models.Questions, error) {
 
 	var questions []models.Questions
-cursor, err := db.Registeration_Questions.Coll.Find(db.Registeration_Questions.Context, bson.M{})
+	cursor, err := db.Registeration_Questions.Coll.Find(db.Registeration_Questions.Context, bson.M{})
 
 	if err != nil {
 		return nil, err
@@ -26,4 +30,31 @@ cursor, err := db.Registeration_Questions.Coll.Find(db.Registeration_Questions.C
 
 	}
 	return questions, cursor.Err()
+}
+
+func StoreRegResponse(c *gin.Context) {
+	var resp models.RespUser
+	if err := c.ShouldBindJSON(&resp); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	uid, err := login.GetUIDFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	dbEntry := models.RegResponseDb{
+		UserID:    uid,
+		Responses: resp,
+	}
+
+	_, err = db.Registeration_Responses.Coll.InsertOne(db.Registeration_Responses.Context, dbEntry)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to store response"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Response stored"})
 }

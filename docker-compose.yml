@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo:6
+    container_name: quiz-mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build: ./backend
+    container_name: quiz-backend
+    restart: always
+    env_file:
+      - ./backend/.env
+    ports:
+      - "2117:2117"
+    depends_on:
+      - mongo
+
+  frontend:
+    build: ./regportal
+    container_name: quiz-frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:

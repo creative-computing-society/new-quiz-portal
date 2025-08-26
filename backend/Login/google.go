@@ -11,44 +11,92 @@ import (
 	"github.com/markbates/goth/gothic"
 )
 
+// func HandleAuth(c *gin.Context) {
+// 	gothic.BeginAuthHandler(c.Writer, c.Request)
+// }
+
 func HandleAuth(c *gin.Context) {
-		gothic.BeginAuthHandler(c.Writer, c.Request)
+	q := c.Request.URL.Query()
+	q.Add("provider", "google")
+	c.Request.URL.RawQuery = q.Encode()
+	gothic.BeginAuthHandler(c.Writer, c.Request)
 }
 
-func HandleAuthCallback (c *gin.Context) {
+func HandleAuthCallback(c *gin.Context) {
 	jwtSecret := os.Getenv("JWT_SECRET")
 	frontendRedirectUrl := os.Getenv("FRONTEND_REDIRECT_URL")
 
-		if jwtSecret == "" || frontendRedirectUrl == ""  {
+	if jwtSecret == "" || frontendRedirectUrl == "" {
 		log.Fatal("env variables for oauth callback missing")
 	}
 
+	user, err := gothic.CompleteUserAuth(c.Writer, c.Request)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	uid := GenerateUserUUID(user.Email)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"email": user.Email,
+		"name":  user.Name,
+		"exp":   time.Now().Add(time.Hour * 12).Unix(),
+	})
 
-		user, err := gothic.CompleteUserAuth(c.Writer, c.Request)
-		if err != nil {
-			c.AbortWithError(http.StatusInternalServerError, err)
-			return
-		}
+	signedToken, err := token.SignedString([]byte(jwtSecret))
 
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256,jwt.MapClaims{
-			"email":user.Email,
-			"name":user.Name,
-			"exp":time.Now().Add(time.Hour*12).Unix(),
-		})
+	err1 := StoreAuthUser(user.Email, signedToken, uid)
+	if err1 != nil {
+		log.Fatal("UNABLE TO STORE USER")
+	}
 
-		signedToken,err := token.SignedString([]byte(jwtSecret))
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 
-		if err != nil {
-        c.AbortWithError(http.StatusInternalServerError, err)
-        return
-    }
-
-	secure:=false
-	if(gin.Mode() == gin.ReleaseMode){
+	secure := false
+	if gin.Mode() == gin.ReleaseMode {
 		secure = true
 	}
 
-	c.SetCookie("quiz_jwt_token",signedToken,3600*12,"/","localhost",secure,true)
+	c.SetCookie("session_token", signedToken, 3600*12, "/", "localhost", secure, true)
 
-		c.Redirect(http.StatusTemporaryRedirect, frontendRedirectUrl)
+	c.Redirect(http.StatusTemporaryRedirect, frontendRedirectUrl)
+}
+
+func AuthMiddleware(c *gin.Context) {
+	tokenStr, err := c.Cookie("session_token")
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Missing session token"})
+		c.Redirect(http.StatusUnauthorized, "/")
+		return
 	}
+
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "JWT secret not set"})
+		return
+	}
+
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			c.Redirect(http.StatusUnauthorized, "/")
+
+			return nil, jwt.ErrSignatureInvalid
+		}
+		return []byte(jwtSecret), nil
+	})
+
+	if err != nil || !token.Valid {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired session token"})
+		c.Redirect(http.StatusUnauthorized, "/")
+		return
+	}
+
+	c.Next()
+}
+
+func Logout(c *gin.Context) {
+	c.SetCookie("session_token", "", -1, "/", "localhost", false, true)
+	c.JSON(200, gin.H{"message": "Logged out"})
+}
