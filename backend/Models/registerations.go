@@ -4,6 +4,7 @@ type Questions struct {
 	QuestionID   QID    `bson:"questionID"`
 	QuestionType bool   `bson:"questionType"`
 	Question     string `bson:"regQuestions"`
+	Validation string `bson:"regex"`
 } // export to frontend
 
 type Answer struct {
