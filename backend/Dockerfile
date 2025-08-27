@@ -18,6 +18,8 @@ WORKDIR /app
 COPY --from=builder /app/quiz-backend .
 COPY admin_portal/templates ./admin_portal/templates
 
+ENV PATH="/usr/local/bin:$PATH"
+
 # Copy .env if you want, or mount it as a secret/volume in production
 # COPY .env .env
 
