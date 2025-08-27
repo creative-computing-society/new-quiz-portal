@@ -8,6 +8,16 @@
   <form action="/admin/add-reg-question" method="POST">
     <label>Question:</label><input type="text" name="question"><br>
     <label>Question Type (true/false):</label><input type="text" name="questiontype"><br>
+    <label for="validation">Validation Type:</label>
+<select name="validation" id="validation" required>
+  <option value="string">String</option>
+  <option value="email">Email</option>
+  <option value="number">Number</option>
+  <option value="github">GitHub ID</option>
+  <option value="linkedin">LinkedIn ID</option>
+  <option value="leetcode">LeetCode ID</option>
+  <option value="link">Link</option>
+</select>
     <button type="submit">Add Question</button>
   </form>
   {{ if .Message }} <p style="color:green">{{ .Message }}</p> {{ end }}

@@ -10,6 +10,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var validationRegexMap = map[string]string{
+	"string":   ".*",
+	"email":    `^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$`,
+	"number":   `^\d+$`,
+	"github":   `^(https?:\/\/)?(www\.)?github\.com\/[A-Za-z0-9-]{1,39}\/?$`,
+	"linkedin": `^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[A-Za-z0-9_-]+\/?$`,
+	"leetcode": `^(https?:\/\/)?(www\.)?leetcode\.com\/[A-Za-z0-9_-]{3,20}\/?$`,
+	"link":     `^(https?:\/\/)?([\w\-])+\.{1}([a-zA-Z]{2,63})([\/\w\-\.\?=%&]*)*\/?$`,
+}
+
 func GenerateQID() models.QID {
 	var id [7]byte
 	_, err := rand.Read(id[:])
@@ -76,10 +86,16 @@ func ShowAddRegQuestion(c *gin.Context) {
 func HandleAddRegQuestion(c *gin.Context) {
 	question := c.PostForm("question")
 	qtype := c.PostForm("questiontype") == "true"
+	validationType := c.PostForm("validation")
+	regex, ok := validationRegexMap[validationType]
+	if !ok {
+		regex = ".*" // fallback to string
+	}
 
 	q := &models.Questions{
 		Question:     question,
 		QuestionType: qtype,
+		Validation:   regex,
 	}
 
 	if err := AddRegQuestion(q, qtype); err != nil {

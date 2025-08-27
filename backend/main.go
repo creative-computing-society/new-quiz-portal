@@ -59,6 +59,8 @@ func main() {
 	router.GET("/google_callback", login.HandleAuthCallback)
 
 	router.GET("/logout", login.Logout)
+	router.GET("/admin", admin.ShowLogin)
+	router.POST("/admin/login", admin.HandleLogin)
 
 	authorized_admin := router.Group("/admin", admin.AuthMiddleware)
 	{

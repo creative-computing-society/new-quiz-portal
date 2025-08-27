@@ -39,6 +39,23 @@ func StoreRegResponse(c *gin.Context) {
 		return
 	}
 
+	var questions []models.Questions
+	cursor, err := db.Registeration_Questions.Coll.Find(db.Registeration_Questions.Context, bson.M{})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch questions"})
+		return
+	}
+	if err := cursor.All(db.Registeration_Questions.Context, &questions); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse questions"})
+		return
+	}
+
+	// Validate answers
+	if err := ValidateAnswers(resp.RegAnswers, questions); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	uid, err := login.GetUIDFromSession(c)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
