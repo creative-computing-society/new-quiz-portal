@@ -15,17 +15,34 @@ func qidToString(qid models.QID) string {
 	return hex.EncodeToString(qid[:])
 }
 
-func ValidateAnswers(answers []models.Answer, questions []models.Questions) error {
-	questionMap := make(map[string]models.Questions)
-	for _, q := range questions {
-		questionMap[qidToString(q.QuestionID)] = q
+func qidEqual(a, b models.QID) bool {
+	if a == nil || b == nil {
+		return false
 	}
+	for i := 0; i < 7; i++ {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func ValidateAnswers(answers []models.Answer, questions []models.Questions) error {
 	for _, ans := range answers {
-		q, ok := questionMap[qidToString(ans.QuestionID)]
-		if !ok {
+		found := false
+		var q models.Questions
+		for _, ques := range questions {
+			if qidEqual(ans.QuestionID, ques.QuestionID) {
+				found = true
+				q = ques
+				break
+			}
+		}
+		if !found {
 			return errors.New("invalid question")
 		}
-		if q.Validation != "" {
+		// Only validate if the question is compulsory
+		if q.QuestionType && q.Validation != "" {
 			matched, _ := regexp.MatchString(q.Validation, ans.Answer)
 			if !matched {
 				return errors.New("answer for question '" + q.Question + "' does not match validation")
