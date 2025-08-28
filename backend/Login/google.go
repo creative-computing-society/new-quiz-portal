@@ -59,7 +59,7 @@ func HandleAuthCallback(c *gin.Context) {
 		secure = true
 	}
 
-	c.SetCookie("session_token", signedToken, 3600*12, "/", "localhost", secure, true)
+	c.SetCookie("session_token", signedToken, 3600*12, "/", "", secure, true)
 
 	c.Redirect(http.StatusTemporaryRedirect, frontendRedirectUrl)
 }
