@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchWithAuth } from "../api";
+
+const QUESTIONS_PER_PAGE = 6;
 
 export default function Register() {
   const [questions, setQuestions] = useState([]);
@@ -8,17 +10,16 @@ export default function Register() {
   const [errors, setErrors] = useState({});
   const [globalError, setGlobalError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if already registered
     fetchWithAuth("/checkRegistered")
       .then((res) => res.json())
       .then((data) => {
         if (data.registered === true) {
           navigate("/already-registered");
         } else {
-          // Load questions
           fetchWithAuth("/regQuestions")
             .then((res) => res.json())
             .then((data) => {
@@ -40,6 +41,13 @@ export default function Register() {
     // eslint-disable-next-line
   }, []);
 
+  const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
+
+  const currentQuestions = questions.slice(
+    page * QUESTIONS_PER_PAGE,
+    (page + 1) * QUESTIONS_PER_PAGE
+  );
+
   const handleChange = (qid, value) => {
     setAnswers((prev) => ({ ...prev, [qid]: value }));
 
@@ -56,15 +64,11 @@ export default function Register() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setGlobalError("");
-
-    // Validate all questions
+  const validatePage = () => {
     let hasError = false;
-    const newErrors = {};
+    const newErrors = { ...errors };
 
-    for (const q of questions) {
+    for (const q of currentQuestions) {
       const answer = answers[q.QuestionID] || "";
 
       // Compulsory check
@@ -80,13 +84,48 @@ export default function Register() {
       }
     }
 
+    setErrors(newErrors);
+    if (hasError) setGlobalError("Please fix the errors before continuing.");
+    else setGlobalError("");
+    return !hasError;
+  };
+
+  const handleNext = (e) => {
+    e.preventDefault();
+    if (validatePage()) setPage((prev) => prev + 1);
+  };
+
+  const handlePrev = (e) => {
+    e.preventDefault();
+    setGlobalError("");
+    setPage((prev) => prev - 1);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Validate all questions before submit
+    let hasError = false;
+    const newErrors = {};
+
+    for (const q of questions) {
+      const answer = answers[q.QuestionID] || "";
+
+      if (q.QuestionType && !answer) {
+        newErrors[q.QuestionID] = "This field is required";
+        hasError = true;
+      }
+      if (q.Regex && answer && !new RegExp(q.Regex).test(answer)) {
+        newErrors[q.QuestionID] = "Invalid format";
+        hasError = true;
+      }
+    }
+
     if (hasError) {
       setErrors(newErrors);
       setGlobalError("Please fix the errors before submitting.");
       return;
     }
 
-    // Prepare payload
     const RegAnswers = questions.map((q) => ({
       QuestionID: q.QuestionID,
       QuestionType: q.QuestionType,
@@ -134,8 +173,8 @@ export default function Register() {
         {loading ? (
           <div className="text-center text-gray-400">Loading questions...</div>
         ) : (
-          <form className="space-y-3" onSubmit={handleSubmit}>
-            {questions.map((q) => (
+          <form className="space-y-3" onSubmit={page === totalPages - 1 ? handleSubmit : handleNext}>
+            {currentQuestions.map((q) => (
               <div key={q.QuestionID} className="mb-4">
                 <label className="block mb-1 font-semibold">
                   {q.Question || "Question"}
@@ -168,13 +207,33 @@ export default function Register() {
             )}
 
             <div className="flex justify-between items-center mt-10 mb-5">
-              <span className="text-xs lg:text-md">#CCS #Batchof2028</span>
-              <button
-                type="submit"
-                className="px-5 lg:px-14 py-2 bg-white lg:text-md text-xs text-gray-900 rounded-lg font-semibold hover:bg-gray-900 hover:text-white border-2 border-gray-700 transition-all"
-              >
-                SUBMIT
-              </button>
+              <span className="text-xs lg:text-md">#CCS #Batchof2029</span>
+              <div>
+                {page > 0 && (
+                  <button
+                    onClick={handlePrev}
+                    className="mr-2 px-5 py-2 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 border-2 border-gray-700 transition-all"
+                  >
+                    Previous
+                  </button>
+                )}
+                {page < totalPages - 1 && (
+                  <button
+                    type="submit"
+                    className="px-5 py-2 bg-white text-gray-900 rounded-lg font-semibold hover:bg-gray-900 hover:text-white border-2 border-gray-700 transition-all"
+                  >
+                    Next
+                  </button>
+                )}
+                {page === totalPages - 1 && (
+                  <button
+                    type="submit"
+                    className="px-5 py-2 bg-white text-gray-900 rounded-lg font-semibold hover:bg-gray-900 hover:text-white border-2 border-gray-700 transition-all"
+                  >
+                    Submit
+                  </button>
+                )}
+              </div>
             </div>
           </form>
         )}
