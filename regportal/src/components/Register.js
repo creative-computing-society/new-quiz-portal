@@ -1,8 +1,9 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchWithAuth } from "../api";
 
 const QUESTIONS_PER_PAGE = 4;
+const STORAGE_KEY = "regportal-answers";
 
 export default function Register() {
   const [questions, setQuestions] = useState([]);
@@ -13,6 +14,7 @@ export default function Register() {
   const [page, setPage] = useState(0);
   const navigate = useNavigate();
 
+  // Load answers from localStorage after questions are loaded
   useEffect(() => {
     fetchWithAuth("/checkRegistered")
       .then((res) => res.json())
@@ -23,9 +25,11 @@ export default function Register() {
           fetchWithAuth("/regQuestions")
             .then((res) => res.json())
             .then((data) => {
-              if (Array.isArray(data.regQuestions))
-                setQuestions(data.regQuestions);
+              if (Array.isArray(data.regQuestions)) setQuestions(data.regQuestions);
               else setQuestions([]);
+              // Restore answers from localStorage
+              const saved = localStorage.getItem(STORAGE_KEY);
+              if (saved) setAnswers(JSON.parse(saved));
               setLoading(false);
             })
             .catch(() => {
@@ -49,7 +53,9 @@ export default function Register() {
   );
 
   const handleChange = (qid, value) => {
-    setAnswers((prev) => ({ ...prev, [qid]: value }));
+    const updatedAnswers = { ...answers, [qid]: value };
+    setAnswers(updatedAnswers);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedAnswers));
 
     // Live validation
     const question = questions.find((q) => q.QuestionID === qid);
@@ -137,11 +143,14 @@ export default function Register() {
       body: JSON.stringify({ RegAnswers }),
     });
 
-    if (res.ok) navigate("/thankyou");
-    else setGlobalError("Failed to submit. Please try again.");
+    if (res.ok) {
+      localStorage.removeItem(STORAGE_KEY);
+      navigate("/thankyou");
+    } else setGlobalError("Failed to submit. Please try again.");
   };
 
   const handleLogout = () => {
+    localStorage.removeItem(STORAGE_KEY);
     fetchWithAuth("/logout").then(() => {
       window.location.href = "/";
     });

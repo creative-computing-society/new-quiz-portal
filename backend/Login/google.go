@@ -97,6 +97,6 @@ func AuthMiddleware(c *gin.Context) {
 }
 
 func Logout(c *gin.Context) {
-	c.SetCookie("session_token", "", -1, "/", "localhost", false, true)
+	c.SetCookie("session_token", "", -1, "/", "", true, true)
 	c.JSON(200, gin.H{"message": "Logged out"})
 }
