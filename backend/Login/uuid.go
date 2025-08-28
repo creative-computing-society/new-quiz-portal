@@ -75,7 +75,7 @@ func Verify_token(c *gin.Context) {
 	tokenStr, err := c.Cookie("session_token")
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Missing session token"})
-		c.Redirect(http.StatusUnauthorized, "/")
+		c.Redirect(http.StatusFound, "/")
 		return
 	}
 
@@ -87,7 +87,7 @@ func Verify_token(c *gin.Context) {
 
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			c.Redirect(http.StatusUnauthorized, "/")
+			c.Redirect(http.StatusFound, "/")
 
 			return nil, jwt.ErrSignatureInvalid
 		}
@@ -96,7 +96,7 @@ func Verify_token(c *gin.Context) {
 
 	if err != nil || !token.Valid {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired session token"})
-		c.Redirect(http.StatusUnauthorized, "/")
+		c.Redirect(http.StatusFound, "/")
 		return
 	}
 
