@@ -72,7 +72,7 @@ func HandleLogin(c *gin.Context) {
 	log.Println("Expected:", AdminUser, AdminPasd)
 
 	if username == AdminUser && password == AdminPasd {
-		c.SetCookie("admin_auth", "true", 3600, "/", "", false, true)
+		c.SetCookie("admin_auth", "true", 3600, "/", "", true, true)
 		c.Redirect(http.StatusFound, "/admin/home")
 		return
 	}
