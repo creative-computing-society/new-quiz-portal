@@ -2,7 +2,7 @@ import  { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchWithAuth } from "../api";
 
-const QUESTIONS_PER_PAGE = 6;
+const QUESTIONS_PER_PAGE = 4;
 
 export default function Register() {
   const [questions, setQuestions] = useState([]);
@@ -53,8 +53,8 @@ export default function Register() {
 
     // Live validation
     const question = questions.find((q) => q.QuestionID === qid);
-    if (question?.Regex) {
-      const pattern = new RegExp(question.Regex);
+    if (question?.Validation) {
+      const pattern = new RegExp(question.Validation);
       setErrors((prev) => ({
         ...prev,
         [qid]: pattern.test(value) ? "" : "Invalid format",
@@ -78,7 +78,7 @@ export default function Register() {
       }
 
       // Regex check
-      if (q.Regex && answer && !new RegExp(q.Regex).test(answer)) {
+      if (q.Validation && answer && !new RegExp(q.Validation).test(answer)) {
         newErrors[q.QuestionID] = "Invalid format";
         hasError = true;
       }
@@ -114,7 +114,7 @@ export default function Register() {
         newErrors[q.QuestionID] = "This field is required";
         hasError = true;
       }
-      if (q.Regex && answer && !new RegExp(q.Regex).test(answer)) {
+      if (q.Validation && answer && !new RegExp(q.Validation).test(answer)) {
         newErrors[q.QuestionID] = "Invalid format";
         hasError = true;
       }
