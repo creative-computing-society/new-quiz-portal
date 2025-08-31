@@ -14,7 +14,7 @@ type Quiz_Questions struct {
 } //export to frontend hoga ye
 type Quiz_Answer struct {
 	QuestionID QID `bson:"questionID"`
-	Answer     OID `bson:"regAnswers"`
+	Answer     OID `bson:"quizAnswers"`
 }
 
 type QuizTrack struct {
