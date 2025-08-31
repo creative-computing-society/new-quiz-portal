@@ -24,25 +24,3 @@ func GetQuizQuestions(c *gin.Context) ([]models.Quiz_Questions, error) {
 
 	return uq.Questions, nil
 }
-
-func getAnswers() ([]models.Quiz_Answer, error) {
-
-	var answers []models.Quiz_Answer
-	cursor, err := db.Registeration_Questions.Coll.Find(db.Registeration_Questions.Context, bson.M{})
-
-	if err != nil {
-		return nil, err
-	}
-	defer cursor.Close(db.Registeration_Questions.Context)
-
-	for cursor.Next(db.Registeration_Questions.Context) {
-		var a models.Quiz_Answer
-		if err := cursor.Decode(&a); err != nil {
-			return nil, err
-		}
-
-		answers = append(answers, a)
-
-	}
-	return answers, cursor.Err()
-}
