@@ -28,6 +28,8 @@ var (
 	Quiz_Questions          Collection
 	Quiz_Responses          Collection
 	Quiz_Answers            Collection
+	Quiz_Track              Collection
+	User_Questions          Collection
 )
 
 func Init() error {

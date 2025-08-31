@@ -16,8 +16,8 @@ var validationRegexMap = map[string]string{
 	"number":     `^\d+$`,
 	"github":     `^(https?:\/\/)?(www\.)?github\.com\/[A-Za-z0-9-]{1,39}\/?$`,
 	"linkedin":   `^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[A-Za-z0-9_-]+\/?$`,
-	"codechef":   `^(https?:\/\/)?(www\.)?linkedin\.com\/users\/[A-Za-z0-9_-]+\/?$`,
-	"codeforces": `^(https?:\/\/)?(www\.)?linkedin\.com\/profile\/[A-Za-z0-9_-]+\/?$`,
+	"codechef":   `^(https?:\/\/)?(www\.)?codechef\.com\/users\/[A-Za-z0-9_-]+\/?$`,
+	"codeforces": `^(https?:\/\/)?(www\.)?codeforces\.com\/profile\/[A-Za-z0-9_-]+\/?$`,
 	"leetcode":   `^(https?:\/\/)?(www\.)?leetcode\.com\/u\/[A-Za-z0-9_-]{3,20}\/?$`,
 	"link":       `^(https?:\/\/)?([\w\-])+\.{1}([a-zA-Z]{2,63})([\/\w\-\.\?=%&]*)*\/?$`,
 }
