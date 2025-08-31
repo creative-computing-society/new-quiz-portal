@@ -29,10 +29,10 @@ type Quiz_Responses struct {
 	Responses []Quiz_Answer `bson:"quiz_responses"`
 }
 
-type Form_Responses struct{
-	Image string
-	Responses []Quiz_Answer
-	FlagsRaised int
+type Form_Responses struct {
+	Image       string        `bson:"snapshot"`
+	Responses   []Quiz_Answer `bson:"quiz_responses"`
+	FlagsRaised int           `bson:"flagsRaised"`
 }
 
 type UserQuestions struct {
@@ -40,4 +40,3 @@ type UserQuestions struct {
 	Shift     int              `bson:"shift"`
 	Questions []Quiz_Questions `bson:"questions"`
 }
-

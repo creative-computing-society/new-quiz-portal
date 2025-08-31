@@ -1,6 +1,7 @@
 package quiz
 
 import (
+	login "ccs.quizportal/Login"
 	models "ccs.quizportal/Models"
 	"ccs.quizportal/db"
 	"github.com/gin-gonic/gin"
@@ -9,24 +10,19 @@ import (
 
 func GetQuizQuestions(c *gin.Context) ([]models.Quiz_Questions, error) {
 
-	var questions []models.Quiz_Questions
-	cursor, err := db.Registeration_Questions.Coll.Find(db.Registeration_Questions.Context, bson.M{})
-
+	userID, err := login.GetUIDFromSession(c)
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(db.Registeration_Questions.Context)
 
-	for cursor.Next(db.Registeration_Questions.Context) {
-		var q models.Quiz_Questions
-		if err := cursor.Decode(&q); err != nil {
-			return nil, err
-		}
-
-		questions = append(questions, q)
-
+	var uq models.UserQuestions
+	filter := bson.M{"userID": userID}
+	err = db.User_Questions.Coll.FindOne(db.User_Questions.Context, filter).Decode(&uq)
+	if err != nil {
+		return nil, err
 	}
-	return questions, cursor.Err()
+
+	return uq.Questions, nil
 }
 
 func getAnswers() ([]models.Quiz_Answer, error) {
