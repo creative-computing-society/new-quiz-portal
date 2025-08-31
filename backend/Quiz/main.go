@@ -70,5 +70,5 @@ func RecieveResponse(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Response stored"})
+	c.JSON(http.StatusOK, gin.H{"message": "Submission Successfull"})
 }

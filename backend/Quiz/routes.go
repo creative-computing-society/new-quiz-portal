@@ -8,31 +8,23 @@ import (
 )
 
 func SubmitQuiz(c *gin.Context) {
-	// submit form
 	var Resp models.Form_Responses
 	err := c.ShouldBindJSON(&Resp)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "Could Not Parse Data")
+		c.JSON(http.StatusBadRequest, "Invalid Request")
 		return
 	}
 
-	
-
-	// save in db
-
-
-	c.JSON(http.StatusCreated, gin.H{"message": "Submission Successful"})
-
+	RecieveResponse(c)
 }
 
-func GetQuizQues(c *gin.Context)  {
-	// get ques from mongo and send to frontend
-	
-	questions , err := GetQuizQuestions(c)
-	
+func GetQuizQues(c *gin.Context) {
+
+	questions, err := GetQuizQuestions(c)
+
 	if err != nil {
-		c.JSON(http.StatusInternalServerError,gin.H{"message":"Could not fetch questions"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err})
 	}
-	c.JSON(http.StatusOK , gin.H{"questions":questions})
+	c.JSON(http.StatusOK, gin.H{"questions": questions})
 }
