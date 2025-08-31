@@ -75,7 +75,8 @@ func main() {
 	{
 		authorized_user.GET("/regQuestions", registerationform.GetAllQues)
 		authorized_user.POST("/register", registerationform.SubmitForm)
-		authorized_user.GET("/quizQuestions", quiz.GetQuizQues)
+		authorized_user.GET("/quiz/get",quiz.GetQuizQues)
+		authorized_user.POST("/quiz/submit",quiz.SubmitQuiz)
 	}
 
 	// run on localhost:8080
