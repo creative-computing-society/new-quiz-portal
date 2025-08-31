@@ -6,6 +6,7 @@ import (
 	"os"
 
 	login "ccs.quizportal/Login"
+	quiz "ccs.quizportal/Quiz"
 	registerationform "ccs.quizportal/Registeration_form"
 	admin "ccs.quizportal/admin_portal"
 	"ccs.quizportal/db"
@@ -72,6 +73,7 @@ func main() {
 	{
 		authorized_user.GET("/regQuestions", registerationform.GetAllQues)
 		authorized_user.POST("/register", registerationform.SubmitForm)
+		authorized_user.GET("/quizQuestions",quiz.GetQuizQues)
 	}
 
 	// run on localhost:8080

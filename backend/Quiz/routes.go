@@ -1,7 +1,6 @@
 package quiz
 
 import (
-	"fmt"
 	"net/http"
 
 	models "ccs.quizportal/Models"
@@ -20,12 +19,18 @@ func SubmitQuiz(c *gin.Context) {
 
 	// save in db
 
-	fmt.Println(Resp)
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Registeration Successful"})
 
 }
 
-func GetQuizQues(c *gin.Context) {
+func GetQuizQues(c *gin.Context)  {
 	// get ques from mongo and send to frontend
+	
+	questions , err := GetQuizQuestions(c)
+	
+	if err != nil {
+		c.JSON(http.StatusInternalServerError,gin.H{"message":"Could not fetch questions"})
+	}
+	c.JSON(http.StatusOK , gin.H{"questions":questions})
 }

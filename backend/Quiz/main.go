@@ -3,10 +3,11 @@ package quiz
 import (
 	models "ccs.quizportal/Models"
 	"ccs.quizportal/db"
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func getQuizQuestions() ([]models.Quiz_Questions, error) {
+func GetQuizQuestions(c *gin.Context) ([]models.Quiz_Questions, error) {
 
 	var questions []models.Quiz_Questions
 	cursor, err := db.Registeration_Questions.Coll.Find(db.Registeration_Questions.Context, bson.M{})
