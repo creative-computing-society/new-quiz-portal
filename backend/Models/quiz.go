@@ -18,10 +18,10 @@ type Quiz_Answer struct {
 }
 
 type QuizTrack struct {
-	UserID     UID    `bson:"userID"`
-	SnapShot   string `bson:"SnapshotLink"`
-	Marks      int    `bson:"marks"`
-	FlagsRaise int    `bson:"flagsraised"`
+	UserID      UID    `bson:"userID"`
+	SnapShot    string `bson:"SnapshotLink"`
+	Marks       int    `bson:"marks"`
+	FlagsRaised int    `bson:"flagsraised"`
 }
 
 type Quiz_Responses struct {
