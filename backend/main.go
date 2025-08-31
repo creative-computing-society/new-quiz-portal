@@ -12,8 +12,10 @@ import (
 	"ccs.quizportal/db"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 	"github.com/markbates/goth"
+	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/google"
 )
 
@@ -21,6 +23,7 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found, using system ENV")
 	}
+    gothic.Store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_SECRET")))
 
 	if err := db.Init(); err != nil {
 		log.Fatalf("Failed to initialize MongoDB: %v", err)
@@ -80,8 +83,9 @@ func main() {
 	}
 
 	// run on localhost:8080
-	// router.Run(":8080")
-	router.Run("0.0.0.0:2117")
+	router.Run(":8080")
+	
+	// router.Run("0.0.0.0:2117")
 }
 
 func checkHealth(c *gin.Context) {
