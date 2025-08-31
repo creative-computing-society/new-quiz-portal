@@ -3,7 +3,6 @@ package quiz
 import (
 	"net/http"
 
-	models "ccs.quizportal/Models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,13 +17,13 @@ import (
 // @Failure      500      {object}  map[string]string "Internal server error"
 // @Router       /quiz/submit [post]
 func SubmitQuiz(c *gin.Context) {
-	var Resp models.Form_Responses
-	err := c.ShouldBindJSON(&Resp)
+	// var Resp models.Form_Responses
+	// err := c.ShouldBindJSON(&Resp)
 
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid Request"})
-		return
-	}
+	// if err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid Request"})
+	// 	return
+	// }
 
 	RecieveResponse(c)
 }
