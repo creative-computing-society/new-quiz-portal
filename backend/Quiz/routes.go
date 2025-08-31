@@ -9,7 +9,7 @@ import (
 
 func SubmitQuiz(c *gin.Context) {
 	// submit form
-	var Resp models.RespUser
+	var Resp models.Form_Responses
 	err := c.ShouldBindJSON(&Resp)
 
 	if err != nil {
@@ -17,10 +17,12 @@ func SubmitQuiz(c *gin.Context) {
 		return
 	}
 
+	
+
 	// save in db
 
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Registeration Successful"})
+	c.JSON(http.StatusCreated, gin.H{"message": "Submission Successful"})
 
 }
 

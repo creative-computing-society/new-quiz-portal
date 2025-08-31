@@ -29,8 +29,15 @@ type Quiz_Responses struct {
 	Responses []Quiz_Answer `bson:"quiz_responses"`
 }
 
+type Form_Responses struct{
+	Image string
+	Responses []Quiz_Answer
+	FlagsRaised int
+}
+
 type UserQuestions struct {
 	UserID    UID              `bson:"userID"`
 	Shift     int              `bson:"shift"`
 	Questions []Quiz_Questions `bson:"questions"`
 }
+
