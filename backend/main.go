@@ -68,12 +68,14 @@ func main() {
 		authorized_admin.GET("/home", admin.ShowHome)
 		authorized_admin.GET("/add-reg-question", admin.ShowAddRegQuestion)
 		authorized_admin.POST("/add-reg-question", admin.HandleAddRegQuestion)
+		authorized_admin.GET("/add-quiz-question", admin.ShowAddQuizQuestion)
+		authorized_admin.POST("/add-quiz-question", admin.AddQuizQuestion)
 	}
 	authorized_user := router.Group("/", login.AuthMiddleware)
 	{
 		authorized_user.GET("/regQuestions", registerationform.GetAllQues)
 		authorized_user.POST("/register", registerationform.SubmitForm)
-		authorized_user.GET("/quizQuestions",quiz.GetQuizQues)
+		authorized_user.GET("/quizQuestions", quiz.GetQuizQues)
 	}
 
 	// run on localhost:8080

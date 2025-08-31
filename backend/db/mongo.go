@@ -61,6 +61,8 @@ func Init() error {
 	Quiz_Questions = Collection{DATABASE.Collection("quiz_ques"), ctx}
 	Quiz_Responses = Collection{DATABASE.Collection("quiz_responses"), ctx}
 	Quiz_Answers = Collection{DATABASE.Collection("quiz_answers"), ctx}
+	Quiz_Track = Collection{DATABASE.Collection("quiz_track"), ctx}
+	User_Questions = Collection{DATABASE.Collection("user_questions"), ctx}
 
 	return nil
 
