@@ -1,0 +1,29 @@
+.mainContainer {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to left, #1F1F70 50%, #CCE4FF 50%);
+
+}
+
+.container {
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  display: flex;
+  width: 70%;
+  height: 80%;
+  border-radius: 40px;
+  min-width: 300px;
+
+}
+
+@media (max-width: 768px) {
+  .mainContainer {
+    height: 100vh;
+    padding: 10px 0;
+  }
+  .container{
+    
+  }
+
+}

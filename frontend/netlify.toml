@@ -1,0 +1,3 @@
+[build]
+  command = "npm i --legacy-peer-deps && npm run build"
+  publish = "build"
