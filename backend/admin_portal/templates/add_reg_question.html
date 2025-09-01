@@ -1,83 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Add Registration Question</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
-    <style>
-        body { background: #181c24; color: #f3f3f3; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
-        .container { background: #23283a; max-width: 500px; margin: 40px auto; border-radius: 16px; box-shadow: 0 8px 32px 0 rgba(31,38,135,0.37); padding: 32px 32px 24px 32px; }
-        h2 { text-align: center; color: #7f9cf5; margin-bottom: 24px; }
-        label { font-weight: 700; color: #a0aec0; }
-        textarea, input[type="text"], select { width: 100%; padding: 10px; margin-top: 6px; margin-bottom: 18px; border: none; border-radius: 8px; background: #2d3748; color: #f3f3f3; font-size: 1em; }
-        textarea:focus, input:focus, select:focus { outline: 2px solid #7f9cf5; }
-        .btn { background: #7f9cf5; color: #181c24; border: none; border-radius: 8px; padding: 10px 18px; font-weight: 700; font-size: 1em; cursor: pointer; transition: background 0.2s; }
-        .btn:hover { background: #5a67d8; }
-        .success { background: #38a169; color: #fff; padding: 10px; border-radius: 8px; margin-bottom: 18px; text-align: center; font-weight: 700; }
-        .error { background: #e53e3e; color: #fff; padding: 10px; border-radius: 8px; margin-bottom: 18px; text-align: center; font-weight: 700; }
-        .nav { text-align: center; margin-bottom: 24px; }
-        .nav a { color: #7f9cf5; text-decoration: none; margin: 0 10px; font-weight: 700; transition: color 0.2s; }
-        .nav a:hover { color: #f3f3f3; }
-        @media (max-width: 600px) { .container { padding: 16px 4px; } }
-    </style>
+  <meta charset="UTF-8">
+  <title>Add Registration Question</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0f1220; --panel:#151a31; --card:#171a2b; --muted:#9aa4bf; --brand:#7f9cf5; --brand-2:#22d3ee;
+      --text:#e7eaf6; --ok:#38a169; --bad:#e53e3e;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(127,156,245,.15), transparent 60%),
+      radial-gradient(900px 600px at 110% 10%, rgba(34,211,238,.12), transparent 55%),
+      var(--bg);
+      color:var(--text); font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    }
+    .nav{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 22px; position:sticky; top:0; z-index:10;
+      background:rgba(15,18,32,.75); backdrop-filter:saturate(140%) blur(10px); border-bottom:1px solid rgba(127,156,245,.2)
+    }
+    .nav a{color:var(--text); text-decoration:none; font-weight:600; padding:8px 12px; border-radius:10px; opacity:.9}
+    .nav a:hover{background:rgba(127,156,245,.12); opacity:1}
+    .brand{display:flex; align-items:center; gap:12px; font-weight:800}
+    .logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;  /* ensures it scales well */
+  border-radius: 8px;   /* optional: keeps smooth edges */
+}
+    .wrap{max-width:800px; margin:26px auto; padding:0 18px 50px}
+    .panel{
+      background:rgba(23,26,43,.9); border:1px solid rgba(127,156,245,.2); border-radius:18px; padding:22px;
+      box-shadow:0 10px 40px rgba(0,0,0,.4)
+    }
+    h2{margin:0 0 14px}
+    label{display:block; font-weight:700; color:#c9d3f3; margin:12px 0 6px}
+    textarea,input,select{
+      width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(127,156,245,.25);
+      background:#0f1426; color:var(--text); font-size:15px; outline:none
+    }
+    textarea:focus,input:focus,select:focus{border-color:var(--brand)}
+    .actions{display:flex; gap:10px; margin-top:16px; flex-wrap:wrap}
+    .btn{
+      background:linear-gradient(135deg,var(--brand),var(--brand-2)); color:#0b1022; border:none;
+      padding:12px 16px; border-radius:12px; font-weight:800; cursor:pointer
+    }
+    .msg{margin-top:12px}
+    .toast{padding:10px 12px; border-radius:12px; border:1px solid; font-weight:700}
+    .toast.ok{background:rgba(56,161,105,.12); border-color:rgba(56,161,105,.45); color:#c8f5d8}
+    .toast.bad{background:rgba(229,62,62,.12); border-color:rgba(229,62,62,.45); color:#ffb3b3}
+    .hint{color:var(--muted); font-size:13px}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="nav">
-            <a href="/admin/home">Home</a>
-            <a href="/admin/add-quiz-question">Add Quiz Q</a>
-            <a href="/admin/add-reg-question">Add Reg Q</a>
-            <a href="/admin/logout">Logout</a>
+  <header class="nav">
+    <div class="brand"><img src="/static/images/ccs-logo.png" alt="CCS Logo" class="logo"> <span>CCS Admin</span></div>
+    <nav>
+      <a href="/admin/home">Home</a>
+      <a href="/admin/add-quiz-question">Add Quiz Q</a>
+      <a href="/admin/add-reg-question">Add Reg Q</a>
+      <a href="/admin/logout">Logout</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="panel">
+      <h2>Add Registration Question</h2>
+      <p class="hint">Define the question, whether it’s compulsory, and pick a validation type.</p>
+
+      <div id="msg" class="msg"></div>
+
+      <form id="regForm" method="POST" action="/admin/add-reg-question" autocomplete="off">
+        <label>Question</label>
+        <textarea name="question" required rows="3" placeholder="Enter registration question"></textarea>
+
+        <label>Type</label>
+        <select name="question_type" required>
+          <option value="true">Compulsory</option>
+          <option value="false">Optional</option>
+        </select>
+
+        <label>Validation</label>
+        <select name="validation" required>
+          <option value="string">String</option>
+          <option value="email">Email</option>
+          <option value="number">Number</option>
+          <option value="github">GitHub ID</option>
+          <option value="linkedin">LinkedIn ID</option>
+          <option value="leetcode">LeetCode ID</option>
+          <option value="link">Link</option>
+        </select>
+
+        <div class="actions">
+          <button type="submit" class="btn">Add Question</button>
         </div>
-        <h2>Add Registration Question</h2>
-        <div id="msg"></div>
-        <form id="regForm" method="POST" action="/admin/add-reg-question" autocomplete="off">
-            <label>Question:</label>
-            <textarea name="question" required rows="3" placeholder="Enter registration question"></textarea>
-            <label>Type:</label>
-            <select name="question_type" required>
-                <option value="true">Compulsory</option>
-                <option value="false">Optional</option>
-            </select>
-            <label>Validation:</label>
-            <select name="validation" required>
-                <option value="string">String</option>
-                <option value="email">Email</option>
-                <option value="number">Number</option>
-                <option value="github">GitHub ID</option>
-                <option value="linkedin">LinkedIn ID</option>
-                <option value="leetcode">LeetCode ID</option>
-                <option value="link">Link</option>
-            </select>
-            <button type="submit" class="btn">Add Question</button>
-        </form>
+      </form>
     </div>
-    <script>
-        document.getElementById('regForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const form = e.target;
-            const formData = new FormData(form);
-            try {
-                const res = await fetch('/admin/add-reg-question', {
-                    method: 'POST',
-                    body: formData
-                });
-                if (res.ok) {
-                    showMsg('Registration question submitted!', false);
-                    form.reset();
-                } else {
-                    const errText = await res.text();
-                    showMsg('Failed to submit: ' + errText, true);
-                }
-            } catch (err) {
-                showMsg('Failed to submit: ' + err, true);
-            }
-        });
-        function showMsg(msg, isError) {
-            const msgDiv = document.getElementById('msg');
-            msgDiv.innerHTML = `<div class="${isError ? 'error' : 'success'}">${msg}</div>`;
-            setTimeout(() => { msgDiv.innerHTML = ""; }, 2500);
+  </main>
+
+  <script>
+    document.getElementById('regForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const form = e.target;
+      const fd = new FormData(form);
+      try{
+        const res = await fetch('/admin/add-reg-question', { method:'POST', body: fd });
+        if(res.ok){
+          toast('Registration question submitted!');
+          form.reset();
+        }else{
+          toast('Failed to submit: ' + await res.text(), true);
         }
-    </script>
+      }catch(err){
+        toast('Failed to submit: ' + err, true);
+      }
+    });
+
+    function toast(message, isError=false){
+      const msg = document.getElementById('msg');
+      msg.innerHTML = `<div class="toast ${isError?'bad':'ok'}">${message}</div>`;
+      setTimeout(()=> msg.innerHTML = '', 2600);
+    }
+  </script>
 </body>
 </html>

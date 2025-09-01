@@ -65,8 +65,17 @@ func main() {
 	router.GET("/google_callback", login.HandleAuthCallback)
 
 	router.GET("/logout", login.Logout)
-	router.GET("/admin", admin.ShowLogin)
+	router.GET("/admin", func(c *gin.Context) {
+		auth, err := c.Cookie("admin_auth")
+		if err != nil || auth != "true" {
+			c.Redirect(http.StatusFound, "/admin/login")
+			return
+		}
+		c.Redirect(http.StatusFound, "/admin/home")
+	})
+	router.GET("/admin/login", admin.ShowLogin)
 	router.POST("/admin/login", admin.HandleLogin)
+	router.Static("/static", "./admin_portal/static")
 
 	authorized_admin := router.Group("/admin", admin.AuthMiddleware)
 	{
@@ -75,6 +84,8 @@ func main() {
 		authorized_admin.POST("/add-reg-question", admin.HandleAddRegQuestion)
 		authorized_admin.GET("/add-quiz-question", admin.ShowAddQuizQuestion)
 		authorized_admin.POST("/add-quiz-question", admin.AddQuizQuestion)
+		authorized_admin.GET("/reg-responses", admin.ShowRegResponses)        // page
+		authorized_admin.GET("/api/reg-responses", admin.GetRegResponsesData) // data endpoint (JSON)
 	}
 	authorized_user := router.Group("/", login.AuthMiddleware)
 	{

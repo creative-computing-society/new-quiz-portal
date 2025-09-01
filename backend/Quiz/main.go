@@ -255,8 +255,8 @@ func RecieveResponse(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Submission Successful"})
 
 	go func(userID models.UID) {
-		filter := bson.M{"userID": userID, "started": true}
-		update := bson.M{"$set": bson.M{"submitted": true}}
+		filter := bson.M{"userID": userID, "quiz_started": true}
+		update := bson.M{"$set": bson.M{"quiz_submitted": true}}
 
 		_, err := db.Updates.Coll.UpdateOne(db.Updates.Context, filter, update)
 		if err != nil {

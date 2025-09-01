@@ -91,7 +91,7 @@ func HandleAddRegQuestion(c *gin.Context) {
 	validationType := c.PostForm("validation")
 	regex, ok := validationRegexMap[validationType]
 	if !ok {
-		regex = ".*" // fallback to string
+		regex = ".*"
 	}
 
 	q := &models.Questions{
