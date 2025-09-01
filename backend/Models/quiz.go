@@ -13,8 +13,8 @@ type Quiz_Questions struct {
 	Shift      int      `bson:"shift"`
 } //export to frontend hoga ye
 type Quiz_Answer struct {
-	QuestionID QID `bson:"questionID"`
-	Answer     OID `bson:"quizAnswers"`
+	QuestionID QID `bson:"questionID" binding:"required"`
+	Answer     OID `bson:"quizAnswers" binding:"required"`
 }
 
 type QuizTrack struct {
@@ -30,9 +30,9 @@ type Quiz_Responses struct {
 }
 
 type Form_Responses struct {
-	Image       string        `bson:"snapshot"`
-	Responses   []Quiz_Answer `bson:"quiz_responses"`
-	FlagsRaised int           `bson:"flagsRaised"`
+	Image       string        `bson:"snapshot" binding:"required"`
+	Responses   []Quiz_Answer `bson:"quiz_responses" binding:"required,dive,required"`
+	FlagsRaised int           `bson:"flagsRaised" binding:"required"`
 }
 
 type UserQuestions struct {

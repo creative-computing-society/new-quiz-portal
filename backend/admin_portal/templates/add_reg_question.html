@@ -1,28 +1,83 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Add Registration Question</title>
+    <meta charset="UTF-8">
+    <title>Add Registration Question</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #181c24; color: #f3f3f3; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
+        .container { background: #23283a; max-width: 500px; margin: 40px auto; border-radius: 16px; box-shadow: 0 8px 32px 0 rgba(31,38,135,0.37); padding: 32px 32px 24px 32px; }
+        h2 { text-align: center; color: #7f9cf5; margin-bottom: 24px; }
+        label { font-weight: 700; color: #a0aec0; }
+        textarea, input[type="text"], select { width: 100%; padding: 10px; margin-top: 6px; margin-bottom: 18px; border: none; border-radius: 8px; background: #2d3748; color: #f3f3f3; font-size: 1em; }
+        textarea:focus, input:focus, select:focus { outline: 2px solid #7f9cf5; }
+        .btn { background: #7f9cf5; color: #181c24; border: none; border-radius: 8px; padding: 10px 18px; font-weight: 700; font-size: 1em; cursor: pointer; transition: background 0.2s; }
+        .btn:hover { background: #5a67d8; }
+        .success { background: #38a169; color: #fff; padding: 10px; border-radius: 8px; margin-bottom: 18px; text-align: center; font-weight: 700; }
+        .error { background: #e53e3e; color: #fff; padding: 10px; border-radius: 8px; margin-bottom: 18px; text-align: center; font-weight: 700; }
+        .nav { text-align: center; margin-bottom: 24px; }
+        .nav a { color: #7f9cf5; text-decoration: none; margin: 0 10px; font-weight: 700; transition: color 0.2s; }
+        .nav a:hover { color: #f3f3f3; }
+        @media (max-width: 600px) { .container { padding: 16px 4px; } }
+    </style>
 </head>
 <body>
-  <h2>Add a Registration Question</h2>
-  <form action="/admin/add-reg-question" method="POST">
-    <label>Question:</label><input type="text" name="question"><br>
-    <label>Question Type (true/false):</label><input type="text" name="questiontype"><br>
-    <label for="validation">Validation Type:</label>
-<select name="validation" id="validation" required>
-  <option value="string">String</option>
-  <option value="email">Email</option>
-  <option value="number">Number</option>
-  <option value="github">GitHub ID</option>
-  <option value="linkedin">LinkedIn ID</option>
-  <option value="codechef">Codechef ID</option>
-  <option value="codeforces">Codeforces ID</option>
-  <option value="leetcode">LeetCode ID</option>
-  <option value="link">Link</option>
-</select>
-    <button type="submit">Add Question</button>
-  </form>
-  {{ if .Message }} <p style="color:green">{{ .Message }}</p> {{ end }}
-  {{ if .Error }} <p style="color:red">{{ .Error }}</p> {{ end }}
+    <div class="container">
+        <div class="nav">
+            <a href="/admin/home">Home</a>
+            <a href="/admin/add-quiz-question">Add Quiz Q</a>
+            <a href="/admin/add-reg-question">Add Reg Q</a>
+            <a href="/admin/logout">Logout</a>
+        </div>
+        <h2>Add Registration Question</h2>
+        <div id="msg"></div>
+        <form id="regForm" method="POST" action="/admin/add-reg-question" autocomplete="off">
+            <label>Question:</label>
+            <textarea name="question" required rows="3" placeholder="Enter registration question"></textarea>
+            <label>Type:</label>
+            <select name="question_type" required>
+                <option value="true">Compulsory</option>
+                <option value="false">Optional</option>
+            </select>
+            <label>Validation:</label>
+            <select name="validation" required>
+                <option value="string">String</option>
+                <option value="email">Email</option>
+                <option value="number">Number</option>
+                <option value="github">GitHub ID</option>
+                <option value="linkedin">LinkedIn ID</option>
+                <option value="leetcode">LeetCode ID</option>
+                <option value="link">Link</option>
+            </select>
+            <button type="submit" class="btn">Add Question</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('regForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            try {
+                const res = await fetch('/admin/add-reg-question', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (res.ok) {
+                    showMsg('Registration question submitted!', false);
+                    form.reset();
+                } else {
+                    const errText = await res.text();
+                    showMsg('Failed to submit: ' + errText, true);
+                }
+            } catch (err) {
+                showMsg('Failed to submit: ' + err, true);
+            }
+        });
+        function showMsg(msg, isError) {
+            const msgDiv = document.getElementById('msg');
+            msgDiv.innerHTML = `<div class="${isError ? 'error' : 'success'}">${msg}</div>`;
+            setTimeout(() => { msgDiv.innerHTML = ""; }, 2500);
+        }
+    </script>
 </body>
 </html>
