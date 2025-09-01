@@ -23,11 +23,13 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found, using system ENV")
 	}
-    gothic.Store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_SECRET")))
+	gothic.Store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_SECRET")))
 
 	if err := db.Init(); err != nil {
 		log.Fatalf("Failed to initialize MongoDB: %v", err)
 	}
+
+	// quiz.CalcScore()
 
 	clientID := os.Getenv("GOOGLE_CLIENT_ID")
 	clientSecret := os.Getenv("GOOGLE_CLIENT_SECRET")
@@ -78,13 +80,13 @@ func main() {
 	{
 		authorized_user.GET("/regQuestions", registerationform.GetAllQues)
 		authorized_user.POST("/register", registerationform.SubmitForm)
-		authorized_user.GET("/quiz/get",quiz.GetQuizQues)
-		authorized_user.POST("/quiz/submit",quiz.SubmitQuiz)
+		authorized_user.GET("/quiz/get", quiz.GetQuizQues)
+		authorized_user.POST("/quiz/submit", quiz.SubmitQuiz)
 	}
 
 	// run on localhost:8080
 	router.Run(":8080")
-	
+
 	// router.Run("0.0.0.0:2117")
 }
 

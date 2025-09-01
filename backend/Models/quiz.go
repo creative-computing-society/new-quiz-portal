@@ -6,11 +6,11 @@ type Option struct {
 }
 
 type Quiz_Questions struct {
-	QuestionID QID      `bson:"questionID"`
-	Question   string   `bson:"quizQuestions"`
-	Options    []Option `bson:"options"`
-	Image      string   `bson:"image_url"` //Optional hai per question //cloudinary link
-	Shift      int      `bson:"shift"`
+	QuestionID QID      `bson:"questionID" binding:"required"`
+	Question   string   `bson:"quizQuestions" binding:"required"`
+	Options    []Option `bson:"options" binding:"required"`
+	Image      string   `bson:"image_url" ` //Optional hai per question //cloudinary link
+	Shift      int      `bson:"shift" binding:"required"`
 } //export to frontend hoga ye
 type Quiz_Answer struct {
 	QuestionID QID `bson:"questionID" binding:"required"`
@@ -39,4 +39,10 @@ type UserQuestions struct {
 	UserID    UID              `bson:"userID"`
 	Shift     int              `bson:"shift"`
 	Questions []Quiz_Questions `bson:"questions"`
+}
+
+type Updates struct {
+	UserID    UID  `bson:"userID" binding:"required"`
+	Started   bool `bson:"quiz_started" binding:"required"`
+	Submitted bool `bson:"quiz_submitted" binding:"required"`
 }
