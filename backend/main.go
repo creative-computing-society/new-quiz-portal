@@ -103,9 +103,9 @@ func main() {
 	}
 
 	// run on localhost:8080
-	router.Run(":8080")
+	// router.Run(":8080")
 
-	// router.Run("0.0.0.0:2117")
+	router.Run("0.0.0.0:2117")
 }
 
 func checkHealth(c *gin.Context) {
