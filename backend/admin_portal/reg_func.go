@@ -55,7 +55,6 @@ func MainAdminMiddleware(c *gin.Context) {
 	}
 	if auth == "main" {
 		c.Redirect(http.StatusFound, "/admin/home")
-		c.Abort()
 		return
 	}
 	c.Next()
@@ -70,7 +69,6 @@ func ViewAdminMiddleware(c *gin.Context) {
 	}
 	if auth == "view" {
 		c.Redirect(http.StatusFound, "/admin/view")
-		c.Abort()
 		return
 	}
 	c.Next()
