@@ -135,10 +135,15 @@ body {
 
 /* Page content */
 .wrap {
-  max-width: 1200px;
-  margin: 20px auto 40px;
-  padding: 0 12px;
+  max-width: 1600px;
+  margin: 12px auto 24px;
+  padding: 0 16px 16px;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-height: 0; /* allow flex child overflow */
 }
 h1 {
   margin: 0 0 16px;
@@ -152,14 +157,20 @@ h1 {
 }
 
 /* Controls */
-.controls {
+.toolbar {
   display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
   flex-wrap: wrap;
-  justify-content: center;
-  align-items: stretch;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
 }
+.toolbar-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.spacer { flex: 1 1 auto; }
+.controls { display: contents; }
 .search {
   flex: 1;
   min-width: 200px;
@@ -196,14 +207,20 @@ h1 {
 }
 
 /* Table */
+.table-container { /* flex wrapper to allow sticky footer / pagination */
+  flex: 1 1 auto;
+  min-height: 0; /* critical for flex scrolling */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 .table-wrap {
-  overflow-x: auto;
-  overflow-y: auto;
+  overflow: auto;
   border-radius: var(--radius);
   background: var(--card);
   border: 1px solid var(--border);
-  height: calc(100vh - 280px);
-  min-height: 400px;
+  flex: 1 1 auto;
+  min-height: 300px;
   box-shadow: 0 6px 16px rgba(0,0,0,0.4);
   position: relative;
   -webkit-overflow-scrolling: touch;
@@ -215,14 +232,15 @@ table {
   min-width: 600px;
 }
 th, td {
-  padding: 12px 16px;
+  padding: 10px 14px;
   border-bottom: 1px solid rgba(255,255,255,0.05);
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 200px;
+  max-width: 260px;
 }
+th:first-child, td:first-child { position: sticky; left: 0; background: rgba(30, 34, 56, 0.95); z-index: 6; }
 th {
   background: rgba(30, 34, 56, 0.95);
   font-weight: 700;
@@ -318,7 +336,7 @@ tbody tr:last-child td {
 }
 
 /* Responsive Design - Mobile First */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .nav {
     padding: 10px 12px;
   }
@@ -336,37 +354,21 @@ tbody tr:last-child td {
     height: 28px;
   }
   
-  .wrap {
-    padding: 0 8px;
-    margin: 15px auto 30px;
-  }
+  .wrap { padding: 0 10px 14px; margin: 10px auto 20px; }
   
   h1 { 
     font-size: 1.5rem; 
     margin-bottom: 12px;
   }
   
-  .controls { 
-    flex-direction: column;
-    gap: 8px;
-  }
-  .search, .btn { 
-    width: 100%;
-    min-width: unset;
-    max-width: none;
-  }
+  .toolbar { gap: 8px; padding: 10px 12px; }
+  .toolbar-group { width: 100%; }
+  .search { flex: 1 1 100%; width: 100%; }
+  .btn { width: 100%; }
   
-  .table-wrap {
-    height: calc(100vh - 320px);
-    min-height: 300px;
-    margin: 0 -8px;
-    border-radius: 12px;
-  }
+  .table-wrap { margin: 0 -4px; }
   
-  table { 
-    font-size: 12px; 
-    min-width: 500px;
-  }
+  table { font-size: 12px; }
   th, td { 
     padding: 8px 10px;
     white-space: normal;
@@ -394,117 +396,29 @@ tbody tr:last-child td {
   }
 }
 
-@media (max-width: 480px) {
-  .nav {
-    padding: 8px 10px;
-  }
-  .brand {
-    font-size: 0.9rem;
-    gap: 6px;
-  }
-  .brand img {
-    width: 24px;
-    height: 24px;
-  }
-  
-  h1 { 
-    font-size: 1.3rem; 
-  }
-  
-  .table-wrap {
-    height: calc(100vh - 300px);
-    margin: 0 -10px;
-    border-radius: 8px;
-  }
-  
-  table { 
-    font-size: 11px; 
-    min-width: 400px;
-  }
-  th, td { 
-    padding: 6px 8px;
-    max-width: 100px;
-  }
-  
-  .modal {
-    margin: 8px;
-    padding: 12px;
-    border-radius: 12px;
-  }
-  .detail-table {
-    font-size: 12px;
-  }
-  .detail-table th,
-  .detail-table td {
-    padding: 6px 8px;
-  }
+@media (max-width: 600px) {
+  th, td { padding: 8px 10px; max-width: 200px; }
+  h1 { font-size: 1.35rem; }
+  .toolbar { padding: 8px 10px; }
+  .search { font-size: 14px; }
+  .btn { font-size: 14px; padding: 10px 16px; }
 }
 
-/* Card layout for very small screens */
-@media (max-width: 600px) {
-  .table-wrap {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    height: calc(100vh - 280px);
-  }
-  
-  table, thead, tbody, th, td, tr {
-    display: block;
-  }
-  
-  thead {
-    display: none;
-  }
-  
-  tbody {
-    padding: 0;
-  }
-  
-  tr {
-    display: block;
-    margin-bottom: 12px;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: var(--card);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    padding: 12px;
-    transition: var(--transition);
-  }
-  
-  tr:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
-  }
-  
-  td {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 6px 0;
-    border: none;
-    font-size: 13px;
-    white-space: normal;
-    max-width: none;
-    word-break: break-word;
-  }
-  
-  td::before {
-    content: attr(data-label);
-    font-weight: 600;
-    color: var(--brand);
-    margin-right: 12px;
-    flex-shrink: 0;
-    min-width: 80px;
-    font-size: 12px;
-  }
-  
-  td:not(:last-child) {
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    padding-bottom: 8px;
-    margin-bottom: 4px;
-  }
-}
+/* Pagination */
+.pagination-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pagination { display: flex; gap: 4px; align-items: center; }
+.page-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; min-width: 34px; text-align: center; font-weight: 600; transition: var(--transition); }
+.page-btn:hover { background: var(--hover); }
+.page-btn.active { background: linear-gradient(135deg,var(--brand),var(--brand-2)); color:#0f1220; box-shadow: 0 0 0 1px rgba(255,255,255,0.08),0 4px 10px rgba(0,0,0,0.4); }
+.page-btn[disabled] { opacity: .4; cursor: not-allowed; }
+.page-size { background: rgba(20,24,40,.8); border:1px solid var(--border); color: var(--text); border-radius: 8px; padding:6px 10px; font-size: 13px; }
+.stat-pill { background: rgba(255,255,255,0.06); padding:6px 10px; border-radius: 20px; font-size: 12px; font-weight:600; letter-spacing:.5px; }
+.divider { width:1px; height:22px; background: var(--border); }
+
+.export-btn { background: rgba(255,255,255,0.06); border:1px solid var(--border); padding:8px 14px; border-radius: 10px; font-weight:600; font-size:13px; cursor:pointer; color:var(--text); transition:var(--transition); }
+.export-btn:hover { background: var(--hover); }
+
+.status-line { font-size: 12px; color: var(--muted); }
 
   </style>
 </head>
@@ -529,16 +443,33 @@ tbody tr:last-child td {
 
   <main class="wrap">
     <h1>Registration Responses</h1>
-    <div class="controls">
-      <input id="q" class="search" placeholder="Search..." />
-      <button id="refresh" class="btn">Refresh</button>
+    <div class="toolbar">
+      <div class="toolbar-group" style="flex:2 1 320px;min-width:260px;">
+        <input id="q" class="search" placeholder="Search (Ctrl+/)..." />
+        <button id="refresh" class="btn" title="Reload data">Refresh</button>
+        <button id="exportCsv" class="export-btn" title="Download CSV">Export CSV</button>
+      </div>
+      <div class="spacer"></div>
+      <div class="toolbar-group" style="flex:1 1 auto;justify-content:flex-end;min-width:220px;">
+        <span class="stat-pill" id="totalCount">0</span>
+        <select id="pageSize" class="page-size" title="Rows per page">
+          <option value="25">25</option>
+          <option value="50" selected>50</option>
+          <option value="100">100</option>
+          <option value="250">250</option>
+        </select>
+      </div>
     </div>
-    <div id="stats" style="font-size:13px;color:var(--muted);margin-bottom:10px">Loading...</div>
-    <div class="table-wrap">
-      <table id="responsesTable">
-        <thead id="thead"></thead>
-        <tbody id="tbody"></tbody>
-      </table>
+    <div class="table-container">
+      <div id="stats" class="status-line">Loading...</div>
+      <div class="table-wrap">
+        <table id="responsesTable">
+          <thead id="thead"></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <!-- <div class="pagination-bar" id="paginationBarTop"></div> -->
+      <div class="pagination-bar" id="paginationBarBottom"></div>
     </div>
   </main>
 </div>
@@ -552,97 +483,202 @@ tbody tr:last-child td {
 </div>
 
 <script>
-  let data={columns:[],rows:[]}
-  const thead=document.getElementById('thead'),
-        tbody=document.getElementById('tbody'),
-        qInp=document.getElementById('q'),
-        stats=document.getElementById('stats')
+  const state = {
+    columns: [],
+    rows: [],
+    filtered: [],
+    page: 1,
+    pageSize: 50,
+    search: ''
+  }
+  const thead = document.getElementById('thead')
+  const tbody = document.getElementById('tbody')
+  const qInp = document.getElementById('q')
+  const stats = document.getElementById('stats')
+  const pageSizeSel = document.getElementById('pageSize')
+  const paginationBars = [document.getElementById('paginationBarTop'), document.getElementById('paginationBarBottom')]
+  const totalCountEl = document.getElementById('totalCount')
 
   async function loadData(){
     stats.textContent='Loading...'
-    try{
-      const res=await fetch('/admin/api/reg-responses')
+    try {
+      const res = await fetch('/admin/api/reg-responses')
       if(!res.ok) throw new Error('fetch failed')
-      const json=await res.json()
-      data=json
-      renderTable(data.columns,data.rows)
-      stats.textContent=`${data.rows.length} responses · ${data.columns.length-1} questions`
-    }catch(e){
-      console.error(e)
+      const json = await res.json()
+      state.columns = json.columns
+      state.rows = json.rows
+      applyFilter()
+      totalCountEl.textContent = json.rows.length
+      stats.textContent = `${json.rows.length} responses · ${json.columns.length-1} questions`
+    } catch(err) {
+      console.error(err)
       stats.textContent='Failed to load'
     }
   }
 
-  function renderTable(columns,rows){
+  function pretty(s){
+    if(s==='email') return 'Email'
+    return s
+      .replace(/_/g,' ')
+      .replace(/([A-Z])/g,' $1')
+      .replace(/^./,c=>c.toUpperCase())
+      .trim()
+  }
+
+  function applyFilter(){
+    const q = state.search.toLowerCase()
+    state.filtered = !q ? [...state.rows] : state.rows.filter(r=>
+      Object.values(r).some(v => (v||'').toString().toLowerCase().includes(q))
+    )
+    // reset page if current page exceeds max
+    const maxPage = Math.max(1, Math.ceil(state.filtered.length / state.pageSize))
+    if(state.page > maxPage) state.page = maxPage
+    render()
+  }
+
+  function render(){
+    renderHeader()
+    renderBody()
+    renderPagination()
+  }
+
+  function renderHeader(){
     thead.innerHTML=''
     const tr=document.createElement('tr')
-    columns.forEach(col=>{
+    state.columns.forEach(col=>{
       const th=document.createElement('th')
       th.textContent=pretty(col)
       tr.appendChild(th)
     })
     thead.appendChild(tr)
+  }
 
+  function sliceForPage(){
+    const start=(state.page-1)*state.pageSize
+    return state.filtered.slice(start,start+state.pageSize)
+  }
+
+  function renderBody(){
     tbody.innerHTML=''
-    rows.forEach(r=>{
+    const displayRows = sliceForPage()
+    displayRows.forEach(r => {
       const tr=document.createElement('tr')
-      tr.onclick=()=>openDetail(r)
-      columns.forEach(col=>{
+      tr.addEventListener('click',()=>openDetail(r))
+      state.columns.forEach(col=>{
         const td=document.createElement('td')
-        td.textContent=(r[col]||"")
-        td.setAttribute('data-label', pretty(col))
+        td.textContent = (r[col]||'')
         tr.appendChild(td)
       })
       tbody.appendChild(tr)
     })
+    const from = state.filtered.length ? (state.page-1)*state.pageSize + 1 : 0
+    const to = Math.min(state.filtered.length, state.page*state.pageSize)
+    stats.textContent = `${from}-${to} of ${state.filtered.length} shown · ${state.columns.length-1} questions`
   }
 
-  function pretty(s){ 
-    if (s === 'email') return 'Email'
-    // Convert snake_case or camelCase to Title Case
-    return s.replace(/_/g, ' ')
-            .replace(/([A-Z])/g, ' $1')
-            .replace(/^./, str => str.toUpperCase())
-            .trim()
-  }
+  function renderPagination(){
+    const total = state.filtered.length
+    const totalPages = Math.max(1, Math.ceil(total / state.pageSize))
+    paginationBars.forEach(bar => {
+      bar.innerHTML=''
+      // left side group
+      const container=document.createElement('div')
+      container.className='pagination'
+      const prev=document.createElement('button')
+      prev.className='page-btn'
+      prev.textContent='‹'
+      prev.disabled=state.page===1
+      prev.onclick=()=>{ if(state.page>1){state.page--; renderBody(); renderPagination();} }
+      container.appendChild(prev)
 
-  // search
-  qInp.addEventListener('input',e=>{
-    const q=e.target.value.toLowerCase()
-    if(!q)return renderTable(data.columns,data.rows)
-    const filtered=data.rows.filter(r=>{
-      return Object.values(r).some(v=>(v||"").toString().toLowerCase().includes(q))
+      const maxButtons = 7
+      let start = Math.max(1, state.page - Math.floor(maxButtons/2))
+      let end = start + maxButtons - 1
+      if(end>totalPages){ end=totalPages; start=Math.max(1,end-maxButtons+1) }
+      if(start>1){
+        container.appendChild(pageButton(1))
+        if(start>2) container.appendChild(ellipsis())
+      }
+      for(let i=start;i<=end;i++) container.appendChild(pageButton(i))
+      if(end<totalPages){
+        if(end<totalPages-1) container.appendChild(ellipsis())
+        container.appendChild(pageButton(totalPages))
+      }
+
+      const next=document.createElement('button')
+      next.className='page-btn'
+      next.textContent='›'
+      next.disabled=state.page===totalPages
+      next.onclick=()=>{ if(state.page<totalPages){state.page++; renderBody(); renderPagination();} }
+      container.appendChild(next)
+
+      const right=document.createElement('div')
+      right.style.marginLeft='auto'
+      right.style.display='flex'
+      right.style.gap='8px'
+      right.style.alignItems='center'
+      right.innerHTML=`<span class="stat-pill">Page ${state.page}/${totalPages}</span>`
+
+      bar.appendChild(container)
+      bar.appendChild(right)
     })
-    renderTable(data.columns,filtered)
-    stats.textContent=`${filtered.length}/${data.rows.length} responses`
+  }
+
+  function pageButton(page){
+    const b=document.createElement('button')
+    b.className='page-btn'
+    b.textContent=page
+    if(page===state.page) b.classList.add('active')
+    b.onclick=()=>{ state.page=page; renderBody(); renderPagination(); }
+    return b
+  }
+  function ellipsis(){ const span=document.createElement('span'); span.textContent='…'; span.style.padding='0 4px'; span.style.color='var(--muted)'; return span }
+
+  // Search events
+  qInp.addEventListener('input', e => { state.search = e.target.value; state.page=1; applyFilter() })
+  document.addEventListener('keydown', e => { if(e.ctrlKey && e.key==='/'){ e.preventDefault(); qInp.focus(); } })
+  document.getElementById('refresh').addEventListener('click', loadData)
+  pageSizeSel.addEventListener('change', e => { state.pageSize = parseInt(e.target.value,10); state.page=1; applyFilter() })
+
+  // CSV Export
+  document.getElementById('exportCsv').addEventListener('click', () => {
+    if(!state.columns.length) return
+    const rows = [state.columns.join(',')]
+    state.filtered.forEach(r => {
+      const line = state.columns.map(c => csvEscape(r[c] || ''))
+      rows.push(line.join(','))
+    })
+    const blob = new Blob([rows.join('\n')], {type:'text/csv;charset=utf-8;'})
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = 'registration_responses.csv'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
   })
+  function csvEscape(val){
+    const s = val.toString().replace(/"/g,'""')
+    if(/[",\n]/.test(s)) return '"'+s+'"'
+    return s
+  }
 
-  document.getElementById('refresh').addEventListener('click',loadData)
-
-  // modal
+  // Modal detail
   function openDetail(row){
-    let html=`<h3>Email</h3><p>${row.email||""}</p>`
-    html+='<h3>Responses</h3><table class="detail-table"><tbody>'
-    data.columns.forEach(col=>{
-      if(col==="email") return
-      const ans=row[col]||""
-      html+=`
-        <tr>
-          <th>${col}</th>
-          <td style="white-space:pre-wrap;">${ans}</td>
-        </tr>`
+    let html = `<h3 style="margin-top:0">${row.email||'No Email'}</h3>`
+    html += '<table class="detail-table"><tbody>'
+    state.columns.forEach(col => {
+      if(col==='email') return
+      const ans = row[col] || ''
+      html += `<tr><th>${pretty(col)}</th><td style="white-space:pre-wrap;">${escapeHtml(ans)}</td></tr>`
     })
-    html+='</tbody></table>'
-    document.getElementById('modalContent').innerHTML=html
+    html += '</tbody></table>'
+    document.getElementById('modalContent').innerHTML = html
     document.getElementById('modal').style.display='flex'
   }
-
   function closeModal(){ document.getElementById('modal').style.display='none' }
   function backdropClose(e){ if(e.target.classList.contains('modal-backdrop')) closeModal() }
-
-  function toggleMenu(){
-    document.getElementById('mobileMenu').classList.toggle('show')
-  }
+  function toggleMenu(){ document.getElementById('mobileMenu').classList.toggle('show') }
+  function escapeHtml(str){ return str.toString().replace(/[&<>" ]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',' ':'&nbsp;'}[c])) }
 
   loadData()
 </script>

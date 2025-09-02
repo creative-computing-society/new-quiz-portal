@@ -77,7 +77,7 @@ func main() {
 	router.POST("/admin/login", admin.HandleLogin)
 	router.Static("/static", "./admin_portal/static")
 
-	authorized_admin := router.Group("/admin", admin.AuthMiddleware)
+	authorized_admin := router.Group("/admin", admin.MainAdminMiddleware)
 	{
 		authorized_admin.GET("/home", admin.ShowHome)
 		authorized_admin.GET("/add-reg-question", admin.ShowAddRegQuestion)
@@ -87,6 +87,13 @@ func main() {
 		authorized_admin.GET("/reg-responses", admin.ShowRegResponses)        // page
 		authorized_admin.GET("/api/reg-responses", admin.GetRegResponsesData) // data endpoint (JSON)
 	}
+
+	view_admin := router.Group("/admin", admin.ViewAdminMiddleware)
+	{
+		view_admin.GET("/view", admin.ShowViewPage)
+		view_admin.GET("/api/reg-responses-view", admin.GetRegResponsesDataSecond)
+	}
+
 	authorized_user := router.Group("/", login.AuthMiddleware)
 	{
 		authorized_user.GET("/regQuestions", registerationform.GetAllQues)

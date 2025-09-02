@@ -2,8 +2,8 @@ package admin
 
 import (
 	"crypto/rand"
-	"log"
 	"net/http"
+	"os"
 
 	models "ccs.quizportal/Models"
 	"ccs.quizportal/db"
@@ -46,17 +46,28 @@ var (
 	AdminPasd string
 )
 
-func AuthMiddleware(c *gin.Context) {
-	log.Println("1")
+func MainAdminMiddleware(c *gin.Context) {
 	auth, err := c.Cookie("admin_auth")
-	if err != nil || auth != "true" {
-		c.Redirect(http.StatusFound, "/admin")
+	if err != nil || auth != "main" {
+		c.Redirect(http.StatusFound, "/admin/login")
 		c.Abort()
 		return
 	}
-	log.Println("2")
-
 	c.Next()
+}
+
+func ViewAdminMiddleware(c *gin.Context) {
+	auth, err := c.Cookie("admin_auth")
+	if err != nil || auth != "view" {
+		c.Redirect(http.StatusFound, "/admin/login")
+		c.Abort()
+		return
+	}
+	c.Next()
+}
+
+func ShowViewPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "view.html", nil)
 }
 
 func ShowHome(c *gin.Context) {
@@ -70,12 +81,20 @@ func ShowLogin(c *gin.Context) {
 func HandleLogin(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
-	log.Println("Submitted:", username, password)
-	log.Println("Expected:", AdminUser, AdminPasd)
 
-	if username == AdminUser && password == AdminPasd {
-		c.SetCookie("admin_auth", "true", 3600, "/", "", true, true)
+	user1 := os.Getenv("ADMIN_USER1")
+	pass1 := os.Getenv("ADMIN_PASS1")
+	user2 := os.Getenv("ADMIN_USER2")
+	pass2 := os.Getenv("ADMIN_PASS2")
+
+	if username == user1 && password == pass1 {
+		c.SetCookie("admin_auth", "main", 3600, "/", "", true, true)
 		c.Redirect(http.StatusFound, "/admin/home")
+		return
+	}
+	if username == user2 && password == pass2 {
+		c.SetCookie("admin_auth", "view", 3600, "/", "", true, true)
+		c.Redirect(http.StatusFound, "/admin/view")
 		return
 	}
 	c.HTML(http.StatusUnauthorized, "login.html", gin.H{"Error": "Invalid credentials"})
