@@ -67,11 +67,19 @@ func main() {
 	router.GET("/logout", login.Logout)
 	router.GET("/admin", func(c *gin.Context) {
 		auth, err := c.Cookie("admin_auth")
-		if err != nil || auth != "true" {
+		if err != nil || auth != "main" && auth != "view" {
 			c.Redirect(http.StatusFound, "/admin/login")
 			return
 		}
-		c.Redirect(http.StatusFound, "/admin/home")
+		if auth == "main" {
+			c.Redirect(http.StatusFound, "/admin/home")
+			return
+		}
+		if auth == "view" {
+			c.Redirect(http.StatusFound, "/admin/view")
+			return
+		}
+
 	})
 	router.GET("/admin/login", admin.ShowLogin)
 	router.POST("/admin/login", admin.HandleLogin)
