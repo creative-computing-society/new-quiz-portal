@@ -1,650 +1,805 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Registration Responses — Admin</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
- <style>
-:root {
-  --bg: #0e101d;
-  --card: rgba(23, 26, 43, 0.85);
-  --muted: #9aa4bf;
-  --brand: #7f9cf5;
-  --brand-2: #22d3ee;
-  --text: #f0f3fa;
-  --hover: rgba(127, 156, 245, 0.12);
-  --border: rgba(255,255,255,0.08);
-  --radius: 16px;
-  --transition: all 0.3s ease;
-}
+  <head>
+    <meta charset="utf-8" />
+    <title>Registration Responses — Admin</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0e101d;
+        --card: rgba(23, 26, 43, 0.85);
+        --muted: #9aa4bf;
+        --brand: #7f9cf5;
+        --brand-2: #22d3ee;
+        --text: #f0f3fa;
+        --hover: rgba(127, 156, 245, 0.12);
+        --border: rgba(255, 255, 255, 0.08);
+        --radius: 16px;
+        --transition: all 0.3s ease;
+      }
 
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: Inter, system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
-  overflow-x: hidden;
-}
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
 
-/* App layout */
-.app {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  min-height: 100vh;
-  width: 100%;
-}
+      /* App layout */
+      .app {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        min-height: 100vh;
+        width: 100%;
+      }
 
-/* Navbar */
-.nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(15, 18, 32, 0.95);
-  backdrop-filter: blur(16px) saturate(160%);
-  border-bottom: 1px solid var(--border);
-  width: 100%;
-}
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 800;
-  font-size: 1.1rem;
-  letter-spacing: -0.5px;
-  flex-shrink: 0;
-}
-.brand img {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  flex-shrink: 0;
-}
-.nav-links {
-  display: flex;
-  gap: 12px;
-}
-.nav-links a {
-  color: var(--text);
-  text-decoration: none;
-  font-weight: 600;
-  padding: 6px 12px;
-  border-radius: 10px;
-  transition: var(--transition);
-  white-space: nowrap;
-  font-size: 14px;
-}
-.nav-links a:hover {
-  background: var(--hover);
-  color: var(--brand-2);
-}
-.burger {
-  display: none;
-  font-size: 24px;
-  cursor: pointer;
-  background: none;
-  border: none;
-  color: var(--text);
-  padding: 4px;
-  border-radius: 6px;
-  transition: var(--transition);
-}
-.burger:hover {
-  background: var(--hover);
-}
+      /* Navbar */
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(15, 18, 32, 0.95);
+        backdrop-filter: blur(16px) saturate(160%);
+        border-bottom: 1px solid var(--border);
+        width: 100%;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 800;
+        font-size: 1.1rem;
+        letter-spacing: -0.5px;
+        flex-shrink: 0;
+      }
+      .brand img {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        flex-shrink: 0;
+      }
+      .nav-links {
+        display: flex;
+        gap: 12px;
+      }
+      .nav-links a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 600;
+        padding: 6px 12px;
+        border-radius: 10px;
+        transition: var(--transition);
+        white-space: nowrap;
+        font-size: 14px;
+      }
+      .nav-links a:hover {
+        background: var(--hover);
+        color: var(--brand-2);
+      }
+      .burger {
+        display: none;
+        font-size: 24px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: var(--text);
+        padding: 4px;
+        border-radius: 6px;
+        transition: var(--transition);
+      }
+      .burger:hover {
+        background: var(--hover);
+      }
 
-/* Mobile menu */
-.mobile-menu {
-  display: none;
-  flex-direction: column;
-  position: absolute;
-  top: 100%;
-  left: 0; 
-  right: 0;
-  background: rgba(23, 26, 43, 0.98);
-  backdrop-filter: blur(14px);
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-  z-index: 99;
-}
-.mobile-menu a {
-  padding: 12px 16px;
-  text-align: left;
-  font-weight: 600;
-  color: var(--text);
-  text-decoration: none;
-  transition: var(--transition);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.mobile-menu a:hover {
-  background: var(--hover);
-  color: var(--brand-2);
-}
-.mobile-menu a:last-child {
-  border-bottom: none;
-}
-.mobile-menu.show { 
-  display: flex; 
-}
+      /* Mobile menu */
+      .mobile-menu {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(23, 26, 43, 0.98);
+        backdrop-filter: blur(14px);
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+        z-index: 99;
+      }
+      .mobile-menu a {
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text);
+        text-decoration: none;
+        transition: var(--transition);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .mobile-menu a:hover {
+        background: var(--hover);
+        color: var(--brand-2);
+      }
+      .mobile-menu a:last-child {
+        border-bottom: none;
+      }
+      .mobile-menu.show {
+        display: flex;
+      }
 
-/* Page content */
-.wrap {
-  max-width: 1200px;
-  margin: 20px auto 40px;
-  padding: 0 12px;
-  width: 100%;
-}
-h1 {
-  margin: 0 0 16px;
-  font-size: 1.8rem;
-  text-align: center;
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: 800;
-}
+      /* Page content */
+      .wrap {
+        max-width: 1200px;
+        margin: 20px auto 40px;
+        padding: 0 12px;
+        width: 100%;
+      }
+      h1 {
+        margin: 0 0 16px;
+        font-size: 1.8rem;
+        text-align: center;
+        background: linear-gradient(135deg, var(--brand), var(--brand-2));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
+      }
 
-/* Controls */
-.controls {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: stretch;
-}
-.search {
-  flex: 1;
-  min-width: 200px;
-  max-width: 400px;
-  padding: 12px 16px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background: rgba(20, 24, 40, 0.8);
-  color: var(--text);
-  font-size: 15px;
-  transition: var(--transition);
-}
-.search:focus {
-  outline: none;
-  border-color: var(--brand);
-  box-shadow: 0 0 8px rgba(127, 156, 245, 0.3);
-}
-.btn {
-  padding: 12px 20px;
-  border-radius: var(--radius);
-  font-weight: 600;
-  border: none;
-  background: linear-gradient(135deg, var(--brand), var(--brand-2));
-  color: #0f1220;
-  font-size: 15px;
-  cursor: pointer;
-  transition: var(--transition);
-  white-space: nowrap;
-  min-width: 100px;
-}
-.btn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
+      /* Controls */
+      .controls {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: stretch;
+      }
+      .search {
+        flex: 1;
+        min-width: 200px;
+        max-width: 400px;
+        padding: 12px 16px;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        background: rgba(20, 24, 40, 0.8);
+        color: var(--text);
+        font-size: 15px;
+        transition: var(--transition);
+      }
+      .search:focus {
+        outline: none;
+        border-color: var(--brand);
+        box-shadow: 0 0 8px rgba(127, 156, 245, 0.3);
+      }
+      .btn {
+        padding: 12px 20px;
+        border-radius: var(--radius);
+        font-weight: 600;
+        border: none;
+        background: linear-gradient(135deg, var(--brand), var(--brand-2));
+        color: #0f1220;
+        font-size: 15px;
+        cursor: pointer;
+        transition: var(--transition);
+        white-space: nowrap;
+        min-width: 100px;
+      }
+      .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
 
-/* Table */
-.table-wrap {
-  overflow-x: auto;
-  overflow-y: auto;
-  border-radius: var(--radius);
-  background: var(--card);
-  border: 1px solid var(--border);
-  height: calc(100vh - 280px);
-  min-height: 400px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
-  position: relative;
-  -webkit-overflow-scrolling: touch;
-}
-table {
-  border-collapse: collapse;
-  width: 100%;
-  font-size: 14px;
-  min-width: 600px;
-}
-th, td {
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 200px;
-}
-th {
-  background: rgba(30, 34, 56, 0.95);
-  font-weight: 700;
-  color: var(--muted);
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  border-bottom: 2px solid var(--border);
-}
-tr {
-  transition: var(--transition);
-}
-tr:hover td {
-  background: var(--hover);
-  cursor: pointer;
-}
-tbody tr:last-child td {
-  border-bottom: none;
-}
+      /* Table */
+      .table-wrap {
+        overflow-x: auto;
+        overflow-y: auto;
+        border-radius: var(--radius);
+        background: var(--card);
+        border: 1px solid var(--border);
+        height: calc(100vh - 280px);
+        min-height: 400px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        position: relative;
+        -webkit-overflow-scrolling: touch;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 17px;
+        min-width: 800px;
+      }
+      th,
+      td {
+        padding: 18px 22px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px;
+      }
+      th {
+        background: rgba(30, 34, 56, 0.95);
+        font-weight: 700;
+        color: var(--muted);
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        border-bottom: 2px solid var(--border);
+      }
+      tr {
+        transition: var(--transition);
+      }
+      tr:hover td {
+        background: var(--hover);
+        cursor: pointer;
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
 
-/* Modal */
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.8);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-  padding: 12px;
-  overflow-y: auto;
-}
-.modal {
-  background: var(--card);
-  border: 1px solid var(--border);
-  padding: 20px;
-  border-radius: var(--radius);
-  max-width: 720px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.6);
-  animation: fadeIn 0.25s ease;
-  position: relative;
-  margin: auto;
-}
-.close {
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  border: none;
-  background: none;
-  color: var(--muted);
-  font-size: 24px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: var(--transition);
-  z-index: 10;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-}
-.close:hover { 
-  color: var(--brand-2); 
-  background: var(--hover);
-}
-.detail-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 18px;
-  font-size: 14px;
-}
-.detail-table th,
-.detail-table td {
-  border: 1px solid var(--border);
-  padding: 12px 14px;
-  text-align: left;
-  vertical-align: top;
-}
-.detail-table th {
-  width: 30%;
-  color: var(--brand);
-  font-weight: 600;
-}
+      /* Modal */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        padding: 12px;
+        overflow-y: auto;
+      }
+      .modal {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 20px;
+        border-radius: var(--radius);
+        max-width: 720px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+        animation: fadeIn 0.25s ease;
+        position: relative;
+        margin: auto;
+      }
+      .close {
+        position: absolute;
+        top: 8px;
+        right: 12px;
+        border: none;
+        background: none;
+        color: var(--muted);
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: var(--transition);
+        z-index: 10;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+      }
+      .close:hover {
+        color: var(--brand-2);
+        background: var(--hover);
+      }
+      .detail-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 18px;
+        font-size: 14px;
+      }
+      .detail-table th,
+      .detail-table td {
+        border: 1px solid var(--border);
+        padding: 12px 14px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .detail-table th {
+        width: 30%;
+        color: var(--brand);
+        font-weight: 600;
+      }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.96); }
-  to { opacity: 1; transform: scale(1); }
-}
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: scale(0.96);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
 
-/* Responsive Design - Mobile First */
-@media (max-width: 768px) {
-  .nav {
-    padding: 10px 12px;
-  }
-  .nav-links { 
-    display: none; 
-  }
-  .burger { 
-    display: block; 
-  }
-  .brand {
-    font-size: 1rem;
-  }
-  .brand img {
-    width: 28px;
-    height: 28px;
-  }
-  
-  .wrap {
-    padding: 0 8px;
-    margin: 15px auto 30px;
-  }
-  
-  h1 { 
-    font-size: 1.5rem; 
-    margin-bottom: 12px;
-  }
-  
-  .controls { 
-    flex-direction: column;
-    gap: 8px;
-  }
-  .search, .btn { 
-    width: 100%;
-    min-width: unset;
-    max-width: none;
-  }
-  
-  .table-wrap {
-    height: calc(100vh - 320px);
-    min-height: 300px;
-    margin: 0 -8px;
-    border-radius: 12px;
-  }
-  
-  table { 
-    font-size: 12px; 
-    min-width: 500px;
-  }
-  th, td { 
-    padding: 8px 10px;
-    white-space: normal;
-    max-width: 120px;
-  }
-  
-  .modal {
-    margin: 10px;
-    padding: 16px;
-    max-height: 95vh;
-  }
-  .close {
-    top: 6px;
-    right: 8px;
-    font-size: 20px;
-    width: 28px;
-    height: 28px;
-  }
-  .detail-table {
-    font-size: 13px;
-  }
-  .detail-table th,
-  .detail-table td {
-    padding: 8px 10px;
-  }
-}
+      /* Responsive Design - Mobile First */
+      @media (max-width: 768px) {
+        .nav {
+          padding: 10px 12px;
+        }
+        .nav-links {
+          display: none;
+        }
+        .burger {
+          display: block;
+        }
+        .brand {
+          font-size: 1rem;
+        }
+        .brand img {
+          width: 28px;
+          height: 28px;
+        }
 
-@media (max-width: 480px) {
-  .nav {
-    padding: 8px 10px;
-  }
-  .brand {
-    font-size: 0.9rem;
-    gap: 6px;
-  }
-  .brand img {
-    width: 24px;
-    height: 24px;
-  }
-  
-  h1 { 
-    font-size: 1.3rem; 
-  }
-  
-  .table-wrap {
-    height: calc(100vh - 300px);
-    margin: 0 -10px;
-    border-radius: 8px;
-  }
-  
-  table { 
-    font-size: 11px; 
-    min-width: 400px;
-  }
-  th, td { 
-    padding: 6px 8px;
-    max-width: 100px;
-  }
-  
-  .modal {
-    margin: 8px;
-    padding: 12px;
-    border-radius: 12px;
-  }
-  .detail-table {
-    font-size: 12px;
-  }
-  .detail-table th,
-  .detail-table td {
-    padding: 6px 8px;
-  }
-}
+        .wrap {
+          padding: 0 8px;
+          margin: 15px auto 30px;
+        }
 
-/* Card layout for very small screens */
-@media (max-width: 600px) {
-  .table-wrap {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    height: calc(100vh - 280px);
-  }
-  
-  table, thead, tbody, th, td, tr {
-    display: block;
-  }
-  
-  thead {
-    display: none;
-  }
-  
-  tbody {
-    padding: 0;
-  }
-  
-  tr {
-    display: block;
-    margin-bottom: 12px;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: var(--card);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    padding: 12px;
-    transition: var(--transition);
-  }
-  
-  tr:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
-  }
-  
-  td {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 6px 0;
-    border: none;
-    font-size: 13px;
-    white-space: normal;
-    max-width: none;
-    word-break: break-word;
-  }
-  
-  td::before {
-    content: attr(data-label);
-    font-weight: 600;
-    color: var(--brand);
-    margin-right: 12px;
-    flex-shrink: 0;
-    min-width: 80px;
-    font-size: 12px;
-  }
-  
-  td:not(:last-child) {
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    padding-bottom: 8px;
-    margin-bottom: 4px;
-  }
-}
+        h1 {
+          font-size: 1.5rem;
+          margin-bottom: 12px;
+        }
 
-  </style>
-</head>
-<body>
-<div class="app">
-  <header class="nav">
-    <div class="brand"><img src="/static/images/ccs-logo.png" alt="CCS Logo"><span>CCS Admin</span></div>
-    <nav class="nav-links">
-      <a href="/admin/home">Home</a>
-      <a href="/admin/add-quiz-question">Add Quiz Q</a>
-      <a href="/admin/add-reg-question">Add Reg Q</a>
-      <a href="/admin/logout">Logout</a>
-    </nav>
-    <button class="burger" onclick="toggleMenu()">☰</button>
-  </header>
-  <div id="mobileMenu" class="mobile-menu">
-    <a href="/admin/home">Home</a>
-    <a href="/admin/add-quiz-question">Add Quiz Q</a>
-    <a href="/admin/add-reg-question">Add Reg Q</a>
-    <a href="/admin/logout">Logout</a>
-  </div>
+        .controls {
+          flex-direction: column;
+          gap: 8px;
+        }
+        .search,
+        .btn {
+          width: 100%;
+          min-width: unset;
+          max-width: none;
+        }
 
-  <main class="wrap">
-    <h1>Registration Responses</h1>
-    <div class="controls">
-      <input id="q" class="search" placeholder="Search..." />
-      <button id="refresh" class="btn">Refresh</button>
+        .table-wrap {
+          height: calc(100vh - 320px);
+          min-height: 300px;
+          margin: 0 -8px;
+          border-radius: 12px;
+        }
+
+        table {
+          font-size: 12px;
+          min-width: 500px;
+        }
+        th,
+        td {
+          padding: 8px 10px;
+          white-space: normal;
+          max-width: 120px;
+        }
+
+        .modal {
+          margin: 10px;
+          padding: 16px;
+          max-height: 95vh;
+        }
+        .close {
+          top: 6px;
+          right: 8px;
+          font-size: 20px;
+          width: 28px;
+          height: 28px;
+        }
+        .detail-table {
+          font-size: 13px;
+        }
+        .detail-table th,
+        .detail-table td {
+          padding: 8px 10px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .nav {
+          padding: 8px 10px;
+        }
+        .brand {
+          font-size: 0.9rem;
+          gap: 6px;
+        }
+        .brand img {
+          width: 24px;
+          height: 24px;
+        }
+
+        h1 {
+          font-size: 1.3rem;
+        }
+
+        .table-wrap {
+          height: calc(100vh - 300px);
+          margin: 0 -10px;
+          border-radius: 8px;
+        }
+
+        table {
+          font-size: 11px;
+          min-width: 400px;
+        }
+        th,
+        td {
+          padding: 6px 8px;
+          max-width: 100px;
+        }
+
+        .modal {
+          margin: 8px;
+          padding: 12px;
+          border-radius: 12px;
+        }
+        .detail-table {
+          font-size: 12px;
+        }
+        .detail-table th,
+        .detail-table td {
+          padding: 6px 8px;
+        }
+      }
+
+      /* Card layout for very small screens */
+      @media (max-width: 600px) {
+        .table-wrap {
+          background: transparent;
+          border: none;
+          box-shadow: none;
+          height: calc(100vh - 280px);
+        }
+
+        table,
+        thead,
+        tbody,
+        th,
+        td,
+        tr {
+          display: block;
+        }
+
+        thead {
+          display: none;
+        }
+
+        tbody {
+          padding: 0;
+        }
+
+        tr {
+          display: block;
+          margin-bottom: 12px;
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          background: var(--card);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+          padding: 12px;
+          transition: var(--transition);
+        }
+
+        tr:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        }
+
+        td {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          padding: 6px 0;
+          border: none;
+          font-size: 13px;
+          white-space: normal;
+          max-width: none;
+          word-break: break-word;
+        }
+
+        td::before {
+          content: attr(data-label);
+          font-weight: 600;
+          color: var(--brand);
+          margin-right: 12px;
+          flex-shrink: 0;
+          min-width: 80px;
+          font-size: 12px;
+        }
+
+        td:not(:last-child) {
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          padding-bottom: 8px;
+          margin-bottom: 4px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="nav">
+        <div class="brand">
+          <img src="/static/images/ccs-logo.png" alt="CCS Logo" /><span
+            >CCS Admin</span
+          >
+        </div>
+        <nav class="nav-links">
+          <a href="/admin/home">Home</a>
+          <a href="/admin/add-quiz-question">Add Quiz Q</a>
+          <a href="/admin/add-reg-question">Add Reg Q</a>
+          <a href="/admin/logout">Logout</a>
+        </nav>
+        <button class="burger" onclick="toggleMenu()">☰</button>
+      </header>
+      <div id="mobileMenu" class="mobile-menu">
+        <a href="/admin/home">Home</a>
+        <a href="/admin/add-quiz-question">Add Quiz Q</a>
+        <a href="/admin/add-reg-question">Add Reg Q</a>
+        <a href="/admin/logout">Logout</a>
+      </div>
+
+      <main class="wrap">
+        <h1>Registration Responses</h1>
+        <div class="controls">
+          <input id="q" class="search" placeholder="Search..." />
+          <button id="refresh" class="btn">Refresh</button>
+        </div>
+        <div
+          id="stats"
+          style="font-size: 13px; color: var(--muted); margin-bottom: 10px"
+        >
+          Loading...
+        </div>
+        <div class="table-wrap">
+          <table id="responsesTable">
+            <thead id="thead"></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+          <div
+            id="pagination"
+            style="
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              margin: 18px 0 0 0;
+              gap: 10px;
+              font-size: 16px;
+            "
+          ></div>
+        </div>
+      </main>
     </div>
-    <div id="stats" style="font-size:13px;color:var(--muted);margin-bottom:10px">Loading...</div>
-    <div class="table-wrap">
-      <table id="responsesTable">
-        <thead id="thead"></thead>
-        <tbody id="tbody"></tbody>
-      </table>
+
+    <!-- Modal -->
+    <div id="modal" class="modal-backdrop" onclick="backdropClose(event)">
+      <div class="modal">
+        <button class="close" onclick="closeModal()">×</button>
+        <div id="modalContent"></div>
+      </div>
     </div>
-  </main>
-</div>
 
-<!-- Modal -->
-<div id="modal" class="modal-backdrop" onclick="backdropClose(event)">
-  <div class="modal">
-    <button class="close" onclick="closeModal()">×</button>
-    <div id="modalContent"></div>
-  </div>
-</div>
+    <script>
+      let data = { columns: [], rows: [] };
+      const thead = document.getElementById("thead"),
+        tbody = document.getElementById("tbody"),
+        qInp = document.getElementById("q"),
+        stats = document.getElementById("stats");
 
-<script>
-  let data={columns:[],rows:[]}
-  const thead=document.getElementById('thead'),
-        tbody=document.getElementById('tbody'),
-        qInp=document.getElementById('q'),
-        stats=document.getElementById('stats')
+      async function loadData() {
+        stats.textContent = "Loading...";
+        try {
+          const res = await fetch("/admin/api/reg-responses");
+          if (!res.ok) throw new Error("fetch failed");
+          const json = await res.json();
+          data = json;
+          renderTable(data.columns, data.rows);
+          stats.textContent = `${data.rows.length} responses · ${
+            data.columns.length - 1
+          } questions`;
+        } catch (e) {
+          console.error(e);
+          stats.textContent = "Failed to load";
+        }
+      }
 
-  async function loadData(){
-    stats.textContent='Loading...'
-    try{
-      const res=await fetch('/admin/api/reg-responses')
-      if(!res.ok) throw new Error('fetch failed')
-      const json=await res.json()
-      data=json
-      renderTable(data.columns,data.rows)
-      stats.textContent=`${data.rows.length} responses · ${data.columns.length-1} questions`
-    }catch(e){
-      console.error(e)
-      stats.textContent='Failed to load'
-    }
-  }
+      function renderTable(columns, rows) {
+        thead.innerHTML = "";
+        const tr = document.createElement("tr");
+        columns.forEach((col) => {
+          const th = document.createElement("th");
+          th.textContent = pretty(col);
+          tr.appendChild(th);
+        });
+        thead.appendChild(tr);
 
-  function renderTable(columns,rows){
-    thead.innerHTML=''
-    const tr=document.createElement('tr')
-    columns.forEach(col=>{
-      const th=document.createElement('th')
-      th.textContent=pretty(col)
-      tr.appendChild(th)
-    })
-    thead.appendChild(tr)
+        tbody.innerHTML = "";
+        rows.forEach((r) => {
+          const tr = document.createElement("tr");
+          tr.onclick = () => openDetail(r);
+          columns.forEach((col) => {
+            const td = document.createElement("td");
+            td.textContent = r[col] || "";
+            td.setAttribute("data-label", pretty(col));
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+      }
 
-    tbody.innerHTML=''
-    rows.forEach(r=>{
-      const tr=document.createElement('tr')
-      tr.onclick=()=>openDetail(r)
-      columns.forEach(col=>{
-        const td=document.createElement('td')
-        td.textContent=(r[col]||"")
-        td.setAttribute('data-label', pretty(col))
-        tr.appendChild(td)
-      })
-      tbody.appendChild(tr)
-    })
-  }
+      function pretty(s) {
+        if (s === "email") return "Email";
+        // Convert snake_case or camelCase to Title Case
+        return s
+          .replace(/_/g, " ")
+          .replace(/([A-Z])/g, " $1")
+          .replace(/^./, (str) => str.toUpperCase())
+          .trim();
+      }
 
-  function pretty(s){ 
-    if (s === 'email') return 'Email'
-    // Convert snake_case or camelCase to Title Case
-    return s.replace(/_/g, ' ')
-            .replace(/([A-Z])/g, ' $1')
-            .replace(/^./, str => str.toUpperCase())
-            .trim()
-  }
+      // search
+      qInp.addEventListener("input", (e) => {
+        const q = e.target.value.toLowerCase();
+        if (!q) return renderTable(data.columns, data.rows);
+        const filtered = data.rows.filter((r) => {
+          return Object.values(r).some((v) =>
+            (v || "").toString().toLowerCase().includes(q)
+          );
+        });
+        renderTable(data.columns, filtered);
+        stats.textContent = `${filtered.length}/${data.rows.length} responses`;
+      });
 
-  // search
-  qInp.addEventListener('input',e=>{
-    const q=e.target.value.toLowerCase()
-    if(!q)return renderTable(data.columns,data.rows)
-    const filtered=data.rows.filter(r=>{
-      return Object.values(r).some(v=>(v||"").toString().toLowerCase().includes(q))
-    })
-    renderTable(data.columns,filtered)
-    stats.textContent=`${filtered.length}/${data.rows.length} responses`
-  })
+      document.getElementById("refresh").addEventListener("click", loadData);
 
-  document.getElementById('refresh').addEventListener('click',loadData)
-
-  // modal
-  function openDetail(row){
-    let html=`<h3>Email</h3><p>${row.email||""}</p>`
-    html+='<h3>Responses</h3><table class="detail-table"><tbody>'
-    data.columns.forEach(col=>{
-      if(col==="email") return
-      const ans=row[col]||""
-      html+=`
+      // modal
+      function openDetail(row) {
+        let html = `<h3>Email</h3><p>${row.email || ""}</p>`;
+        html += '<h3>Responses</h3><table class="detail-table"><tbody>';
+        data.columns.forEach((col) => {
+          if (col === "email") return;
+          const ans = row[col] || "";
+          html += `
         <tr>
           <th>${col}</th>
           <td style="white-space:pre-wrap;">${ans}</td>
-        </tr>`
-    })
-    html+='</tbody></table>'
-    document.getElementById('modalContent').innerHTML=html
-    document.getElementById('modal').style.display='flex'
-  }
+        </tr>`;
+        });
+        html += "</tbody></table>";
+        document.getElementById("modalContent").innerHTML = html;
+        document.getElementById("modal").style.display = "flex";
+      }
 
-  function closeModal(){ document.getElementById('modal').style.display='none' }
-  function backdropClose(e){ if(e.target.classList.contains('modal-backdrop')) closeModal() }
+      function closeModal() {
+        document.getElementById("modal").style.display = "none";
+      }
+      function backdropClose(e) {
+        if (e.target.classList.contains("modal-backdrop")) closeModal();
+      }
 
-  function toggleMenu(){
-    document.getElementById('mobileMenu').classList.toggle('show')
-  }
+      function toggleMenu() {
+        document.getElementById("mobileMenu").classList.toggle("show");
+      }
 
-  loadData()
-</script>
-</body>
+      loadData();
+    </script>
+    <!-- ...existing code... -->
+    <script>
+      // ...existing code...
+
+      // Pagination variables
+      let currentPage = 1,
+        pageSize = 15;
+
+      function renderTable(columns, rows) {
+        thead.innerHTML = "";
+        const tr = document.createElement("tr");
+        columns.forEach((col) => {
+          const th = document.createElement("th");
+          th.textContent = pretty(col);
+          tr.appendChild(th);
+        });
+        thead.appendChild(tr);
+
+        tbody.innerHTML = "";
+        // PAGINATION: slice rows for current page
+        const start = (currentPage - 1) * pageSize,
+          end = start + pageSize;
+        const pageRows = rows.slice(start, end);
+        pageRows.forEach((r) => {
+          const tr = document.createElement("tr");
+          tr.onclick = () => openDetail(r);
+          columns.forEach((col) => {
+            const td = document.createElement("td");
+            td.textContent = r[col] || "";
+            td.setAttribute("data-label", pretty(col));
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+        renderPagination(rows.length);
+      }
+
+      function renderPagination(total) {
+        const pageCount = Math.ceil(total / pageSize);
+        const pag = document.getElementById("pagination");
+        pag.innerHTML = "";
+        if (pageCount <= 1) return;
+        const prev = document.createElement("button");
+        prev.textContent = "‹ Prev";
+        prev.className = "btn";
+        prev.disabled = currentPage === 1;
+        prev.onclick = () => {
+          currentPage--;
+          renderTable(data.columns, filteredRows());
+        };
+        pag.appendChild(prev);
+
+        // Show up to 5 page numbers
+        let start = Math.max(1, currentPage - 2),
+          end = Math.min(pageCount, start + 4);
+        if (end - start < 4) start = Math.max(1, end - 4);
+        for (let i = start; i <= end; i++) {
+          const b = document.createElement("button");
+          b.textContent = i;
+          b.className = "btn" + (i === currentPage ? " active" : "");
+          b.style.fontWeight = i === currentPage ? "bold" : "normal";
+          b.disabled = i === currentPage;
+          b.onclick = () => {
+            currentPage = i;
+            renderTable(data.columns, filteredRows());
+          };
+          pag.appendChild(b);
+        }
+
+        const next = document.createElement("button");
+        next.textContent = "Next ›";
+        next.className = "btn";
+        next.disabled = currentPage === pageCount;
+        next.onclick = () => {
+          currentPage++;
+          renderTable(data.columns, filteredRows());
+        };
+        pag.appendChild(next);
+      }
+
+      // Filtered rows for search
+      function filteredRows() {
+        const q = qInp.value.toLowerCase();
+        if (!q) return data.rows;
+        return data.rows.filter((r) => {
+          return Object.values(r).some((v) =>
+            (v || "").toString().toLowerCase().includes(q)
+          );
+        });
+      }
+
+      // Update search handler to reset page
+      qInp.addEventListener("input", (e) => {
+        currentPage = 1;
+        const filtered = filteredRows();
+        renderTable(data.columns, filtered);
+        stats.textContent = `${filtered.length}/${data.rows.length} responses`;
+      });
+
+      document.getElementById("refresh").addEventListener("click", () => {
+        currentPage = 1;
+        loadData();
+      });
+
+      // ...existing code...
+    </script>
+    <!-- ...existing code... -->
+  </body>
 </html>
