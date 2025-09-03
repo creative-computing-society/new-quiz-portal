@@ -92,8 +92,9 @@ func main() {
 		authorized_admin.POST("/add-reg-question", admin.HandleAddRegQuestion)
 		authorized_admin.GET("/add-quiz-question", admin.ShowAddQuizQuestion)
 		authorized_admin.POST("/add-quiz-question", admin.AddQuizQuestion)
-		authorized_admin.GET("/reg-responses", admin.ShowRegResponses)        // page
-		authorized_admin.GET("/api/reg-responses", admin.GetRegResponsesData) // data endpoint (JSON)
+		authorized_admin.GET("/reg-responses", admin.ShowRegResponses) // page
+		authorized_admin.GET("/api/reg-responses", admin.GetRegResponsesData)
+		authorized_admin.POST("/remove-duplicate-registrations", admin.RemoveDuplicateRegistrations) // data endpoint (JSON)
 	}
 
 	view_admin := router.Group("/admin", admin.ViewAdminMiddleware)

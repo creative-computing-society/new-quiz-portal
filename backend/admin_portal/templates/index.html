@@ -100,6 +100,22 @@
             <p>Portal is <strong style="color:var(--ok)">Operational</strong>. No pending alerts.</p>
           </div>
         </div>
+        <button id="removeDupBtn" class="btn" style="margin-top:24px;">Remove Duplicate Registrations</button>
+<div id="dupResult" style="margin-top:12px;color:#facc15;font-weight:600;"></div>
+<script>
+document.getElementById('removeDupBtn').onclick = async function() {
+  if(!confirm("Are you sure you want to remove duplicate registrations?")) return;
+  const res = await fetch('/admin/remove-duplicate-registrations', {method:'POST'});
+  const data = await res.json();
+  if(data.removed && data.removed.length) {
+    document.getElementById('dupResult').innerHTML =
+      `Removed ${data.count} duplicate(s):<br>` +
+      data.removed.map(n=>`• ${n}`).join('<br>');
+  } else {
+    document.getElementById('dupResult').textContent = "No duplicates found.";
+  }
+};
+</script>
 
         <ul class="list">
           <li>Need help? Ping the Tech team.</li>
