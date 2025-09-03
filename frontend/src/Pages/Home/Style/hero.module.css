@@ -1,0 +1,112 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+img, a {
+  -webkit-tap-highlight-color: transparent;
+  /* pointer-events: none; */
+  user-select: none;
+}
+
+/* button:focus{
+  outline: none !important;
+} */
+
+.heroContainer {
+  position: relative;
+  background-image: url("../Assets/heroBg.svg");
+  height: calc(100vh - 6vw);
+  /* width: 100vw; */
+  /* object-fit: contain; */
+  padding-top: 30px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.heroImg {
+  position: absolute;
+  height: 20vw;
+  bottom: 20px;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+/*ccs logo*/
+.logo {
+  display: block;
+  /* z-index: 1; */
+  /* position: absolute;
+  top: 5vw;
+  left: 0; */
+  width: 200px;
+  margin: 0 auto;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 10vh;
+}
+
+.button {
+  width: max(230px, 15vw);
+  height: 60px;
+  font-size: 20px;
+  font-family: Montserrat;
+  color: white;
+  background: #3f3d56;
+  box-shadow: 7px 11px 5px rgba(0, 0, 0, 0.25);
+  border-radius: 25px;
+  border: none;
+  display: block;
+  /* margin-top: 1.875em; */
+  cursor: pointer;
+
+  transition: all 400ms;
+}
+
+.button:hover {
+  background-color: #2e2d3c;
+  transform: scale(1.1);
+  transition-duration: 400ms;
+}
+
+/* .registerButton {
+  opacity: 0.75;
+  cursor: auto;
+} */
+
+.spacer {
+  display: flex;
+  align-items: center;
+  height: 8vw;
+}
+
+@media (max-width: 900px) {
+  .heroImg {
+    height: max(200px, 30vw);
+    bottom: 10vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+}

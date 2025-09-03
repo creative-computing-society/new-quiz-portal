@@ -1,0 +1,41 @@
+.ovalcont {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height for vertical centering */
+}
+
+.ovaltext {
+  border-radius: 15vw;
+  background-color: rgb(174, 226, 219);
+  font-size: 1.2vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center; /* Center the text inside the element */
+  width: 75vw;
+  padding: 3vw;
+  font-family: "monospace";
+}
+
+.centerButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.centerButton button {
+  font-size: 1.5vw;
+  padding: 1vw 2vw;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 0.5vw;
+  cursor: pointer;
+}
+
+.centerButton button:hover {
+  background-color: #45a049;
+}

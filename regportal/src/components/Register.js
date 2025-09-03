@@ -14,7 +14,7 @@ export default function Register() {
   const [page, setPage] = useState(0);
   const navigate = useNavigate();
 
-  // Load answers from localStorage after questions are loaded
+
   useEffect(() => {
     fetchWithAuth("/checkRegistered")
       .then((res) => res.json())
@@ -27,7 +27,7 @@ export default function Register() {
             .then((data) => {
               if (Array.isArray(data.regQuestions)) setQuestions(data.regQuestions);
               else setQuestions([]);
-              // Restore answers from localStorage
+
               const saved = localStorage.getItem(STORAGE_KEY);
               if (saved) setAnswers(JSON.parse(saved));
               setLoading(false);
@@ -42,7 +42,7 @@ export default function Register() {
         setGlobalError("Failed to check registration status");
         setLoading(false);
       });
-    // eslint-disable-next-line
+
   }, []);
 
   const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
@@ -57,7 +57,7 @@ export default function Register() {
     setAnswers(updatedAnswers);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedAnswers));
 
-    // Live validation
+
     const question = questions.find((q) => q.QuestionID === qid);
     if (question?.Validation) {
       const pattern = new RegExp(question.Validation);
@@ -77,13 +77,13 @@ export default function Register() {
     for (const q of currentQuestions) {
       const answer = answers[q.QuestionID] || "";
 
-      // Compulsory check
+
       if (q.QuestionType && !answer) {
         newErrors[q.QuestionID] = "This field is required";
         hasError = true;
       }
 
-      // Regex check
+
       if (q.Validation && answer && !new RegExp(q.Validation).test(answer)) {
         newErrors[q.QuestionID] = "Invalid format";
         hasError = true;
@@ -109,7 +109,7 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Validate all questions before submit
+
     let hasError = false;
     const newErrors = {};
 
