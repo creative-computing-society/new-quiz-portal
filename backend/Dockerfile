@@ -18,7 +18,7 @@ WORKDIR /app
 COPY --from=builder /app/quiz-backend .
 COPY admin_portal/templates ./admin_portal/templates
 COPY .env .env
-
+COPY admin_portal/static admin_portal/static
 
 ENV PATH="/usr/local/bin:$PATH"
 

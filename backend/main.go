@@ -23,11 +23,13 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found, using system ENV")
 	}
-    gothic.Store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_SECRET")))
+	gothic.Store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_SECRET")))
 
 	if err := db.Init(); err != nil {
 		log.Fatalf("Failed to initialize MongoDB: %v", err)
 	}
+
+	// quiz.CalcScore()
 
 	clientID := os.Getenv("GOOGLE_CLIENT_ID")
 	clientSecret := os.Getenv("GOOGLE_CLIENT_SECRET")
@@ -63,29 +65,55 @@ func main() {
 	router.GET("/google_callback", login.HandleAuthCallback)
 
 	router.GET("/logout", login.Logout)
-	router.GET("/admin", admin.ShowLogin)
-	router.POST("/admin/login", admin.HandleLogin)
+	router.GET("/admin", func(c *gin.Context) {
+		auth, err := c.Cookie("admin_auth")
+		if err != nil || auth != "main" && auth != "view" {
+			c.Redirect(http.StatusFound, "/admin/login")
+			return
+		}
+		if auth == "main" {
+			c.Redirect(http.StatusFound, "/admin/home")
+			return
+		}
+		if auth == "view" {
+			c.Redirect(http.StatusFound, "/admin/view")
+			return
+		}
 
-	authorized_admin := router.Group("/admin", admin.AuthMiddleware)
+	})
+	router.GET("/admin/login", admin.ShowLogin)
+	router.POST("/admin/login", admin.HandleLogin)
+	router.Static("/static", "./backend/admin_portal/static")
+
+	authorized_admin := router.Group("/admin", admin.MainAdminMiddleware)
 	{
 		authorized_admin.GET("/home", admin.ShowHome)
 		authorized_admin.GET("/add-reg-question", admin.ShowAddRegQuestion)
 		authorized_admin.POST("/add-reg-question", admin.HandleAddRegQuestion)
 		authorized_admin.GET("/add-quiz-question", admin.ShowAddQuizQuestion)
 		authorized_admin.POST("/add-quiz-question", admin.AddQuizQuestion)
+		authorized_admin.GET("/reg-responses", admin.ShowRegResponses)        // page
+		authorized_admin.GET("/api/reg-responses", admin.GetRegResponsesData) // data endpoint (JSON)
 	}
+
+	view_admin := router.Group("/admin", admin.ViewAdminMiddleware)
+	{
+		view_admin.GET("/view", admin.ShowViewPage)
+		view_admin.GET("/api/reg-responses-view", admin.GetRegResponsesDataSecond)
+	}
+
 	authorized_user := router.Group("/", login.AuthMiddleware)
 	{
 		authorized_user.GET("/regQuestions", registerationform.GetAllQues)
 		authorized_user.POST("/register", registerationform.SubmitForm)
-		authorized_user.GET("/quiz/get",quiz.GetQuizQues)
-		authorized_user.POST("/quiz/submit",quiz.SubmitQuiz)
+		authorized_user.GET("/quiz/get", quiz.GetQuizQues)
+		authorized_user.POST("/quiz/submit", quiz.SubmitQuiz)
 	}
 
 	// run on localhost:8080
-	router.Run(":8080")
-	
-	// router.Run("0.0.0.0:2117")
+	// router.Run(":8080")
+
+	router.Run("0.0.0.0:2117")
 }
 
 func checkHealth(c *gin.Context) {

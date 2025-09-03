@@ -28,7 +28,6 @@ func SubmitQuiz(c *gin.Context) {
 	RecieveResponse(c)
 }
 
-
 // @Summary      Get quiz Questions
 // @Description  Send questions for each user to the frontend
 // @Tags         quiz
@@ -44,4 +43,5 @@ func GetQuizQues(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 	}
 	c.JSON(http.StatusOK, gin.H{"questions": questions})
+
 }
