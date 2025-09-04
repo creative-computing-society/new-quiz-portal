@@ -20,49 +20,8 @@ const QuizPage = () => {
   const [questions, setQuestions] = useState([]);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
-  const [flagsRaised, setFlagsRaised] = useState(0);
   const [capturedImage, setCapturedImage] = useState("");
   const navigate = useNavigate();
-
-  function sendCheatAttemptRequest() {
-    // Increment flags raised instead of making API call
-    setFlagsRaised(prev => prev + 1);
-    console.log("Cheat attempt detected, flags raised:", flagsRaised + 1);
-  }
-
-  const handleKeyDown = useCallback(
-    (e) => {
-
-
-      if (
-        e.key === "Escape" ||
-        e.key === "F11" ||
-        e.key === "F12" ||
-        e.key === "Meta" ||
-        e.key === "Alt" ||
-        e.key === "Control" ||
-        e.key === "c" ||
-        e.key === "x" ||
-        e.key === "v" ||
-        e.key === "r" ||
-        e.key === "Shift" ||
-        e.key === "Tab"
-      ) {
-        sendCheatAttemptRequest();
-        alert(`Warning: Unauthorized action detected! Total warnings: ${flagsRaised + 1}`);
-      }
-
-
-    },
-    [] // Removed unnecessary dependency
-  );
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [handleKeyDown]);
 
   const handleImageCapture = useCallback(
     async (base64Image) => {
@@ -98,6 +57,175 @@ const QuizPage = () => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
+    //     const data = [{
+    //   "questionID": "q5",
+    //   "questiontext": "How many rectangles are there in the figure shown?",
+    //   "options": [
+    //     {
+    //       "option_value": "8",
+    //       "option_id": "opt1"
+    //     },
+    //     {
+    //       "option_value": "18",
+    //       "option_id": "opt2"
+    //     },
+    //     {
+    //       "option_value": "17",
+    //       "option_id": "opt3"
+    //     },
+    //     {
+    //       "option_value": "20",
+    //       "option_id": "opt4"
+    //     }
+    //   ],
+    //   "image_url": "https://i.postimg.cc/9XksXCLR/Q1.png",
+    //   "shift": null
+    // },
+    // {
+    //   "questionID": "q6",
+    //   "questiontext": "Five cars (A, B, C, D, E) are colored red, blue, green, yellow, and black. The red car is not A or D. The blue car is neither C nor E. The green car is not B or C. The yellow car is not A, and the black car is not B. C is not the blue or green car. B is not the red or black car. Which car is black?",
+    //   "options": [
+    //     {
+    //       "option_value": "A",
+    //       "option_id": "opt1"
+    //     },
+    //     {
+    //       "option_value": "B",
+    //       "option_id": "opt2"
+    //     },
+    //     {
+    //       "option_value": "C",
+    //       "option_id": "opt3"
+    //     },
+    //     {
+    //       "option_value": "D",
+    //       "option_id": "opt4"
+    //     }
+    //   ],
+    //   "image_url": null,
+    //   "shift": null
+    // },
+    // {
+    //   "questionID": "q7",
+    //   "questiontext": "The committee’s recommendations were not considered __ because they lacked sufficient evidence and data.",
+    //   "options": [
+    //     {
+    //       "option_value": "cogent",
+    //       "option_id": "opt1"
+    //     },
+    //     {
+    //       "option_value": "opulent",
+    //       "option_id": "opt2"
+    //     },
+    //     {
+    //       "option_value": "obsequious",
+    //       "option_id": "opt3"
+    //     },
+    //     {
+    //       "option_value": "salubrious",
+    //       "option_id": "opt4"
+    //     }
+    //   ],
+    //   "image_url": null,
+    //   "shift": null
+    // },
+    // {
+    //   "questionID": "q8",
+    //   "questiontext": "Choose the most grammatically correct sentence from the following options.",
+    //   "options": [
+    //     {
+    //       "option_value": "The data is compelling, but the findings is not.",
+    //       "option_id": "opt1"
+    //     },
+    //     {
+    //       "option_value": "The data are compelling, but the findings are not.",
+    //       "option_id": "opt2"
+    //     },
+    //     {
+    //       "option_value": "The data are compelling, but the findings is not.",
+    //       "option_id": "opt3"
+    //     },
+    //     {
+    //       "option_value": "The data is compelling, but the findings are not.",
+    //       "option_id": "opt4"
+    //     }
+    //   ],
+    //   "image_url": null,
+    //   "shift": null
+    // },
+    // {
+    //   "questionID": "q9",
+    //   "questiontext": "What word in the English language becomes shorter when you add letters to it?",
+    //   "options": [
+    //     {
+    //       "option_value": "short",
+    //       "option_id": "opt1"
+    //     },
+    //     {
+    //       "option_value": "pneumonoultramicroscopicsilicovolcanoconiosis",
+    //       "option_id": "opt2"
+    //     },
+    //     {
+    //       "option_value": "the",
+    //       "option_id": "opt3"
+    //     },
+    //     {
+    //       "option_value": "none of the above",
+    //       "option_id": "opt4"
+    //     }
+    //   ],
+    //   "image_url": null,
+    //   "shift": null
+    // },
+    // {
+    //   "questionID": "q10",
+    //   "questiontext": "The project team leader __ the technical specifications on the table before the meeting.",
+    //   "options": [
+    //     {
+    //       "option_value": "lie",
+    //       "option_id": "opt1"
+    //     },
+    //     {
+    //       "option_value": "lied",
+    //       "option_id": "opt2"
+    //     },
+    //     {
+    //       "option_value": "lay",
+    //       "option_id": "opt3"
+    //     },
+    //     {
+    //       "option_value": "laid",
+    //       "option_id": "opt4"
+    //     }
+    //   ],
+    //   "image_url": null,
+    //   "shift": null
+    // },
+    // {
+    //   "questionID": "q11",
+    //   "questiontext": "Which of the following sentences is grammatically correct?",
+    //   "options": [
+    //     {
+    //       "option_value": "Every man, woman and child are accounted for.",
+    //       "option_id": "opt1"
+    //     },
+    //     {
+    //       "option_value": "Every man, woman and child is accounted for.",
+    //       "option_id": "opt2"
+    //     },
+    //     {
+    //       "option_value": "Both of the above.",
+    //       "option_id": "opt3"
+    //     },
+    //     {
+    //       "option_value": "None of the above.",
+    //       "option_id": "opt4"
+    //     }
+    //   ],
+    //   "image_url": null,
+    //   "shift": null
+    // }];
+
         
         // Backend returns {questions: [...]} format according to swagger docs
         const transformedQuestions = data.questions.map((question, index) => {
@@ -108,8 +236,8 @@ const QuizPage = () => {
             
           return {
             _id: questionIdHex,
-            question: question.question,
-            options: question.options.map(opt => opt.value),
+            question: question.questiontext,
+            options: question.options.map(opt => opt.option_value),
             backendId: question.questionID, // Keep original byte array for submission
             backendOptions: question.options // Keep original options with byte array IDs
           };
@@ -126,32 +254,29 @@ const QuizPage = () => {
 
   useEffect(() => {
 
-    const userData = JSON.parse(localStorage.getItem("user"));
-    if (userData && userData.endTime) {
-      const endTime = new Date(userData.endTime);
-      const adjustedEnd = subtractTime(endTime, 5, 30);
-      const currentTime = new Date();
-      const initialTimeRemaining = Math.floor(
-        (adjustedEnd - currentTime) / 1000
-      );
-      setTimeRemaining(initialTimeRemaining);
+    const endTime = new Date();
+    const adjustedEnd = subtractTime(endTime, 5, 30);
+    const currentTime = new Date();
+    const initialTimeRemaining = Math.floor(
+      (adjustedEnd - currentTime) / 1000
+    );
+    setTimeRemaining(initialTimeRemaining);
 
-      const timer = setInterval(() => {
-        setTimeRemaining((prevTime) => {
-          if (prevTime <= 0) {
-            clearInterval(timer);
-            if (!hasSubmitted) {
-              handleSubmit();
-              setHasSubmitted(true);
-            }
-            return 0;
+    const timer = setInterval(() => {
+      setTimeRemaining((prevTime) => {
+        if (prevTime <= 0) {
+          clearInterval(timer);
+          if (!hasSubmitted) {
+            handleSubmit();
+            setHasSubmitted(true);
           }
-          return prevTime - 1;
-        });
-      }, 1000);
+          return 0;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
 
-      return () => clearInterval(timer);
-    }
+    return () => clearInterval(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps  
   }, [hasSubmitted, handleImageCapture]);
 
@@ -191,7 +316,6 @@ const QuizPage = () => {
       const submissionData = {
         image: capturedImage, // Use the latest captured image
         responses: responses,
-        flagsRaised: flagsRaised // Use the accumulated flags
       };
 
       const response = await fetch(
@@ -270,15 +394,6 @@ const QuizPage = () => {
               {formatTime(timeRemaining)}
             </p>
           </div>
-          
-          {/* Flags Raised Indicator */}
-          {flagsRaised > 0 && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 rounded-md">
-              <p className="text-red-700 text-sm font-medium">
-                ⚠️ Warnings: {flagsRaised}
-              </p>
-            </div>
-          )}
           
           <div>
             <div className="space-y-2">

@@ -57,16 +57,15 @@ function App() {
     const checkAuth = () => {
       setAuthenticated(!!Cookies.get("jwt"));
     };
-
     checkAuth();
   }, []);
+
 
   return (
     <div className="App">
       <Router>
         <Routes>
           <Route path="/" element={<Testing />} />
-          <Route path="/testing" element={<Testing />} />
           {/* Registration routes omitted for now */}
           
           <Route
@@ -77,7 +76,8 @@ function App() {
             path="/instructions"
             element={<ProtectedRoute element={<Instructions />} />}
           />
-          <Route path="/test" element={<ProtectedRoute element={<Test />} />} />
+          {/* <Route path="/test" element={<ProtectedRoute element={<Test />} />} /> */}
+          <Route path="/test" element={<Test />} />
           <Route
             path="/submitted"
             element={<ProtectedRoute element={<Submitted />} />}
