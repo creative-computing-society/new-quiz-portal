@@ -23,6 +23,10 @@ function formatTime(date) {
 
 function LoginRedirect() {
   const navigate = useNavigate();
+  navigate("/test");
+  return <>
+    Loading...
+  </>;
   const user = localStorage.getItem("user");
   if (!user) {
     navigate("/login");
@@ -44,23 +48,25 @@ function LoginRedirect() {
     navigate("/home");
   };
 
-  return (
-    <div className={styles.ovalcont}>
-      <div className={styles.ovaltext}>
-        {/* <br />
-        Will be updated soon
-        <br /> */}
-        Please login back at your slot time:
-        <br />
-        {formattedSTime} --- {formattedETime}
-        <br />
-        All the best!
-        <br />
-      </div>
-      <div className={styles.centerButton}>
-        <button onClick={goToHome}>Back to Home</button>
-      </div>
-    </div>
+  return (<>
+    Loading...
+  </>
+    // <div className={styles.ovalcont}>
+    //   <div className={styles.ovaltext}>
+    //     {/* <br />
+    //     Will be updated soon
+    //     <br /> */}
+    //     Please login back at your slot time:
+    //     <br />
+    //     {formattedSTime} --- {formattedETime}
+    //     <br />
+    //     All the best!
+    //     <br />
+    //   </div>
+    //   <div className={styles.centerButton}>
+    //     <button onClick={goToHome}>Back to Home</button>
+    //   </div>
+    // </div>
   );
 }
 
