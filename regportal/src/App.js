@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./components/Home";
-// import Register from "./components/Register";
+import Register from "./components/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AlreadyRegistered from "./components/AlreadyRegistered";
 import ThankYou from "./components/ThankYou";
@@ -16,7 +16,7 @@ function App() {
           path="/register"
           element={
             <ProtectedRoute>
-              <Ended />
+              <Register />
             </ProtectedRoute>
           }
         />

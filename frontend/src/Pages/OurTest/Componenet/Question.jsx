@@ -16,6 +16,7 @@ const Question = ({ question, onAnswerChange, onMarkForReview, isMarkedForReview
     <div className="mb-6 p-4 bg-white rounded shadow">
       <h3 className="text-xl font-semibold mb-3">{question.question}</h3>
       <div className="space-y-2">
+        <img src={question.image} alt="Reference Image" style={{ width: '25vw' }} />
         {question.options.map((option, index) => (
           <label key={index} className="flex items-center space-x-2">
             <input

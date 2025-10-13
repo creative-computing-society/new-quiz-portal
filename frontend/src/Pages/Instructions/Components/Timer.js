@@ -50,15 +50,12 @@ function Timer({ updateState }) {
       audio: true
     })
     .then((stream) => {
-      // console.log("permission granted")
       setButton(
         <div><input type="button" value="Start Test" onClick={startTest} className={styles.startTest} /></div>
       )
       setMessage("")
-      // setMessage("")
     })
     .catch((err) => {
-      // console.log("permission not granted")
       setMessage("* Give Camera and Microphone access and refresh this page *")
     });
   }

@@ -7,11 +7,12 @@
   }
   .contentSection {
     width: 80%;
-    margin: 0px auto;
+    margin: auto;
     padding-bottom: 0;
   }
   .instructions {
     padding-top: 5vw;
+    padding-bottom: 5vw;
   }
   .bg{
     background-color: rgb(171, 225, 248);

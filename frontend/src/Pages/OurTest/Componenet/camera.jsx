@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useRef } from "react";
 import start from "./draw";
 
-const CustomWebcam = ({ onImageCapture }) => {
+const CustomWebcam = ({ onImageCapture, flag }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   // console.log(data);
@@ -30,8 +30,7 @@ const CustomWebcam = ({ onImageCapture }) => {
     const logger = (warnings) => {
       if (warnings && warnings.length > 0) {
         console.log("Face detection warnings:", warnings);
-        // You can pass these warnings to parent component if needed
-        // onImageCapture could be extended to handle warnings
+        flag();
       }
     };
 

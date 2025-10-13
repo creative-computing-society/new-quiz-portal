@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import styles from "./Style/loginredirect.module.css";
+import { useEffect } from "react";
 
 function subtractTime(date, hours, minutes) {
   const result = new Date(date);
@@ -23,7 +24,9 @@ function formatTime(date) {
 
 function LoginRedirect() {
   const navigate = useNavigate();
-  navigate("/test");
+  useEffect(() => {
+    navigate("/instructions")
+  }, [])
   return <>
     Loading...
   </>;

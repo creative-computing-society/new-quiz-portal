@@ -27,7 +27,7 @@ const Testing = () => {
             onMouseLeave={() => setIsHovered(false)}
             onClick={handleLogin}
           >
-            Login with CCS
+            Login
           </button>
         </div>
       </div>
