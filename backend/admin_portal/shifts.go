@@ -95,40 +95,68 @@ func AssignShiftsAndQuestions(c *gin.Context) {
 		return
 	}
 
-	created, skipped := 0, 0
-	for idx, uid := range userIDs {
-		shift := (idx % req.NumShifts) + 1
-		binaryUID := StringToUID(uid)
-		count, err := db.User_Questions.Coll.CountDocuments(
-			db.User_Questions.Context,
-			bson.M{"userID": binaryUID},
-		)
-		if err != nil {
-			continue
+	existingCursor, err := db.User_Questions.Coll.Find(db.User_Questions.Context, bson.M{})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load existing user questions"})
+		return
+	}
+	defer existingCursor.Close(db.User_Questions.Context)
+
+	existingUserIDs := make(map[string]struct{})
+	for existingCursor.Next(db.User_Questions.Context) {
+		var doc struct {
+			UserID any `bson:"userID"`
 		}
-		if count > 0 {
+		if err := existingCursor.Decode(&doc); err == nil {
+			switch v := doc.UserID.(type) {
+			case []byte:
+				existingUserIDs[string(v)] = struct{}{}
+			case string:
+				existingUserIDs[v] = struct{}{}
+			case primitive.Binary:
+				existingUserIDs[string(v.Data)] = struct{}{}
+			}
+		}
+	}
+	// log.Printf("Loaded %d existing user entries\n", len(existingUserIDs)) // BHAK SAALA GPT...Debugging sikhara hai.
+
+	if req.QuestionsPerSet > len(questions) {
+		req.QuestionsPerSet = len(questions)
+	}
+	preShuffledSets := make([][]models.Quiz_Questions, req.NumShifts)
+	for i := 0; i < req.NumShifts; i++ {
+		qcopy := make([]models.Quiz_Questions, len(questions))
+		copy(qcopy, questions)
+		shuffleQuestions(qcopy)
+		preShuffledSets[i] = qcopy[:req.QuestionsPerSet]
+	}
+
+	var newEntries []interface{}
+	created, skipped := 0, 0
+
+	for idx, uid := range userIDs {
+		if _, exists := existingUserIDs[uid]; exists {
 			skipped++
 			continue
 		}
 
-		if req.QuestionsPerSet > len(questions) {
-			req.QuestionsPerSet = len(questions)
-		}
-		userQs := make([]models.Quiz_Questions, len(questions))
-		copy(userQs, questions)
-		shuffleQuestions(userQs)
-		userQs = userQs[:req.QuestionsPerSet]
-
+		shift := (idx % req.NumShifts) + 1
 		entry := models.UserQuestions{
 			UserID:    StringToUID(uid),
 			Shift:     shift,
-			Questions: userQs,
+			Questions: preShuffledSets[shift-1],
 		}
-		_, err = db.User_Questions.Coll.InsertOne(db.User_Questions.Context, entry)
-		if err == nil {
-			created++
+		newEntries = append(newEntries, entry)
+		created++
+	}
+
+	if len(newEntries) > 0 {
+		_, err := db.User_Questions.Coll.InsertMany(db.User_Questions.Context, newEntries)
+		if err != nil {
+			fmt.Println("InsertMany error:", err)
 		}
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message":          "Shifts and questions assigned",
 		"users_processed":  len(userIDs),
