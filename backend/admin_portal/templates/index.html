@@ -102,6 +102,37 @@
         </div>
         <button id="removeDupBtn" class="btn" style="margin-top:24px;">Remove Duplicate Registrations</button>
 <div id="dupResult" style="margin-top:12px;color:#facc15;font-weight:600;"></div>
+<div style="margin-top:32px;">
+  <label for="numShifts" style="font-weight:600;">Number of Shifts:</label>
+  <input type="number" id="numShifts" min="1" value="3" style="width:60px; margin:0 8px;">
+  <label for="questionsPerSet" style="font-weight:600;">Questions per Set:</label>
+  <input type="number" id="questionsPerSet" min="1" value="10" style="width:60px; margin:0 8px;">
+  <button id="assignShiftsBtn" class="btn">Assign Shifts &amp; Questions</button>
+  <div id="assignShiftsResult" style="margin-top:10px; color:#facc15; font-weight:600;"></div>
+</div>
+<script>
+document.getElementById('assignShiftsBtn').onclick = async function() {
+  const numShifts = parseInt(document.getElementById('numShifts').value, 10);
+  const questionsPerSet = parseInt(document.getElementById('questionsPerSet').value, 10);
+  if (!numShifts || numShifts < 1) {
+    alert("Enter a valid number of shifts.");
+    return;
+  }
+  if (!questionsPerSet || questionsPerSet < 1) {
+    alert("Enter a valid number of questions per set.");
+    return;
+  }
+  if (!confirm("Are you sure you want to assign shifts and shuffle questions for all registered users?")) return;
+  const res = await fetch('/admin/assign-shifts', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({num_shifts: numShifts, questions_per_set: questionsPerSet})
+  });
+  const data = await res.json();
+  document.getElementById('assignShiftsResult').textContent =
+    (data.message || "Done") + " | Created: " + (data.created || 0) + " | Skipped (already assigned): " + (data.skipped_existing || 0);
+};
+</script>
 <script>
 document.getElementById('removeDupBtn').onclick = async function() {
   if(!confirm("Are you sure you want to remove duplicate registrations?")) return;
@@ -123,5 +154,6 @@ document.getElementById('removeDupBtn').onclick = async function() {
       </section>
     </main>
   </div>
+
 </body>
 </html>
