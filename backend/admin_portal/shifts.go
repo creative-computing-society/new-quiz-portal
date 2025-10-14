@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"fmt"
 	"math/rand"
 	"net/http"
 	"sort"
@@ -10,6 +11,7 @@ import (
 	"ccs.quizportal/db"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func shuffleQuestions(qs []models.Quiz_Questions) {
@@ -24,14 +26,22 @@ func StringToUID(s string) models.UID {
 }
 
 func AssignShiftsAndQuestions(c *gin.Context) {
+
 	var req struct {
 		NumShifts       int `json:"num_shifts"`
 		QuestionsPerSet int `json:"questions_per_set"`
 	}
+
+	// body, _ := io.ReadAll(c.Request.Body)
+	// log.Println("Received body:", string(body))
+	// c.Request.Body = io.NopCloser(bytes.NewBuffer(body))
 	if err := c.ShouldBindJSON(&req); err != nil || req.NumShifts < 1 || req.QuestionsPerSet < 1 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "num_shifts and questions_per_set required"})
 		return
 	}
+
+	fmt.Printf("num_shifts=%d, questions_per_set=%d\n", req.NumShifts, req.QuestionsPerSet)
+	// log.Println(1)
 
 	cursor, err := db.Registeration_Responses.Coll.Find(db.Registeration_Responses.Context, bson.M{})
 	if err != nil {
@@ -40,6 +50,7 @@ func AssignShiftsAndQuestions(c *gin.Context) {
 	}
 	defer cursor.Close(db.Registeration_Responses.Context)
 
+	// log.Println(2)
 	type RegDoc struct {
 		UserID any `bson:"userID"`
 	}
@@ -52,9 +63,14 @@ func AssignShiftsAndQuestions(c *gin.Context) {
 				userIDs = append(userIDs, string(v))
 			case string:
 				userIDs = append(userIDs, v)
+			case primitive.Binary:
+				userIDs = append(userIDs, string(v.Data))
+			default:
+				fmt.Printf("Unknown userID type: %T\n", v)
 			}
 		}
 	}
+	// log.Println(3)
 	if len(userIDs) == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No registered users found"})
 		return
