@@ -98,8 +98,11 @@ func AssignShiftsAndQuestions(c *gin.Context) {
 	created, skipped := 0, 0
 	for idx, uid := range userIDs {
 		shift := (idx % req.NumShifts) + 1
-
-		count, err := db.User_Questions.Coll.CountDocuments(db.User_Questions.Context, bson.M{"userID": uid})
+		binaryUID := StringToUID(uid)
+		count, err := db.User_Questions.Coll.CountDocuments(
+			db.User_Questions.Context,
+			bson.M{"userID": binaryUID},
+		)
 		if err != nil {
 			continue
 		}
