@@ -85,7 +85,7 @@ func main() {
 	router.POST("/admin/login", admin.HandleLogin)
 	router.Static("/static", "./backend/admin_portal/static")
 
-	quiz.CalcScore();
+	router.GET("/updateScores",quiz.UpdateScores)
 
 	authorized_admin := router.Group("/admin", admin.MainAdminMiddleware)
 	{

@@ -1,6 +1,8 @@
 package quiz
 
 import (
+	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -45,3 +47,13 @@ func GetQuizQues(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"questions": questions})
 
 }
+
+func UpdateScores(c *gin.Context) {
+	err := CalcScore();
+	if(err!=nil){
+		log.Fatal("could not calculate scores");
+	} else {
+		fmt.Println("doneee")
+	}
+}
+
