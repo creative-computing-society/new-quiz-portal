@@ -85,6 +85,8 @@ func main() {
 	router.POST("/admin/login", admin.HandleLogin)
 	router.Static("/static", "./backend/admin_portal/static")
 
+	quiz.CalcScore();
+
 	authorized_admin := router.Group("/admin", admin.MainAdminMiddleware)
 	{
 		authorized_admin.GET("/home", admin.ShowHome)
@@ -112,6 +114,7 @@ func main() {
 		authorized_user.POST("/quiz/submit", quiz.SubmitQuiz)
 	}
 
+
 	// run on localhost:8080
 	router.Run(":8080")
 
@@ -121,3 +124,4 @@ func main() {
 func checkHealth(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Backend is up and running"})
 }
+
