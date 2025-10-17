@@ -165,3 +165,139 @@ func AssignShiftsAndQuestions(c *gin.Context) {
 		"num_shifts":       req.NumShifts,
 	})
 }
+
+func ReassignShiftAndQuestions(c *gin.Context) {
+	var req struct {
+		Shift           int `json:"shift"`
+		QuestionsPerSet int `json:"questions_per_set"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil || req.Shift < 1 || req.QuestionsPerSet < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "shift and questions_per_set required"})
+		return
+	}
+
+	cursor, err := db.Updates.Coll.Find(db.Updates.Context, bson.M{
+		"$or": []bson.M{
+			{"quiz_started": false},
+			{"quiz_submitted": false},
+		},
+	})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load updates"})
+		return
+	}
+	defer cursor.Close(db.Updates.Context)
+
+	type UpdateDoc struct {
+		UserID any `bson:"userID"`
+	}
+	var userIDs []string
+	for cursor.Next(db.Updates.Context) {
+		var doc UpdateDoc
+		if err := cursor.Decode(&doc); err == nil {
+			switch v := doc.UserID.(type) {
+			case []byte:
+				userIDs = append(userIDs, string(v))
+			case string:
+				userIDs = append(userIDs, v)
+			case primitive.Binary:
+				userIDs = append(userIDs, string(v.Data))
+			}
+		}
+	}
+	if len(userIDs) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "No users found for reassignment"})
+		return
+	}
+
+	var questions []models.Quiz_Questions
+	qCursor, err := db.Quiz_Questions.Coll.Find(db.Quiz_Questions.Context, bson.M{})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load quiz questions"})
+		return
+	}
+	defer qCursor.Close(db.Quiz_Questions.Context)
+	for qCursor.Next(db.Quiz_Questions.Context) {
+		var q models.Quiz_Questions
+		if err := qCursor.Decode(&q); err == nil {
+			questions = append(questions, q)
+		}
+	}
+	if len(questions) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No quiz questions found"})
+		return
+	}
+	if req.QuestionsPerSet > len(questions) {
+		req.QuestionsPerSet = len(questions)
+	}
+	created := 0
+	for _, uid := range userIDs {
+
+		_, _ = db.User_Questions.Coll.DeleteMany(db.User_Questions.Context, bson.M{"userID": StringToUID(uid)})
+
+		qcopy := make([]models.Quiz_Questions, len(questions))
+		copy(qcopy, questions)
+		shuffleQuestions(qcopy)
+		userQs := qcopy[:req.QuestionsPerSet]
+
+		entry := models.UserQuestions{
+			UserID:    StringToUID(uid),
+			Shift:     req.Shift,
+			Questions: userQs,
+		}
+		_, err := db.User_Questions.Coll.InsertOne(db.User_Questions.Context, entry)
+		if err == nil {
+			created++
+		}
+
+		_, _ = db.Updates.Coll.DeleteMany(db.Updates.Context, bson.M{"userID": StringToUID(uid)})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":         "Reassigned shifts and questions",
+		"users_processed": len(userIDs),
+		"created":         created,
+		"shift":           req.Shift,
+	})
+}
+
+func SetShiftTiming(c *gin.Context) {
+	var req struct {
+		Shift     int    `json:"shift"`
+		Date      string `json:"date"`
+		StartTime string `json:"start_time"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil || req.Shift < 1 || req.Date == "" || req.StartTime == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "shift, date, start_time required"})
+		return
+	}
+
+	dateParsed, err := time.Parse("2006-01-02", req.Date)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date format"})
+		return
+	}
+	startParsed, err := time.Parse("15:04", req.StartTime)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid start_time format"})
+		return
+	}
+	ist := time.FixedZone("IST", 5*3600+1800)
+	startDateTime := time.Date(
+		dateParsed.Year(), dateParsed.Month(), dateParsed.Day(),
+		startParsed.Hour(), startParsed.Minute(), 0, 0, ist,
+	)
+
+	shiftEntry := models.Shift{
+		Shift: req.Shift,
+		Date:  dateParsed,
+		Start: startDateTime,
+	}
+
+	_, err = db.Shifts.Coll.InsertOne(db.Shifts.Context, shiftEntry)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to insert shift"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Shift timing set", "shift": req.Shift})
+}

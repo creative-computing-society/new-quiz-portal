@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"time"
 
 	login "ccs.quizportal/Login"
 	models "ccs.quizportal/Models"
@@ -15,133 +16,21 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const shift int = 1 //later will make it central , time mapped
+// const shift int = 1 //later will make it central , time mapped
 
-// func GetQuizQuestions(c *gin.Context) ([]models.Quiz_Questions, error) {
+var (
+	shiftsMap     map[int]models.Shift
+	errLoadShifts error
+)
 
-// 	userID, err := login.GetUIDFromSession(c)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	var uq models.UserQuestions
-// 	filter := bson.M{"userID": userID}
-// 	err = db.User_Questions.Coll.FindOne(db.User_Questions.Context, filter).Decode(&uq)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	if uq.Shift != shift {
-// 		return nil, errors.New("shift does not match")
-// 	}
-// 	go func(userID models.UID) {
-// 		dbEntry := models.Updates{
-// 			UserID:    userID,
-// 			Started:   true,
-// 			Submitted: false,
-// 		}
-// 		_, err := db.Updates.Coll.UpdateOne(
-// 			db.Updates.Context,
-// 			bson.M{"userID": userID},
-// 			bson.M{"$setOnInsert": dbEntry},
-// 			options.Update().SetUpsert(true),
-// 		)
-// 		if err != nil {
-// 			log.Printf("failed to insert update for user %v: %v", userID, err)
-// 		}
-// 	}(userID)
-
-// 	return uq.Questions, nil
-
-// }
-
-// func RecieveResponse(c *gin.Context) {
-// 	var resp models.Form_Responses
-// 	if err := c.ShouldBindJSON(&resp); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request "})
-// 		return
-// 	}
-
-// 	userID, err := login.GetUIDFromSession(c)
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	filter := bson.M{"userID": userID}
-// 	count, err := db.Quiz_Responses.Coll.CountDocuments(db.Quiz_Responses.Context, filter)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
-// 		return
-// 	}
-// 	if count > 0 {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "User has already submitted responses"})
-// 		return
-// 	}
-// 	count, err = db.Quiz_Track.Coll.CountDocuments(db.Quiz_Track.Context, filter)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
-// 		return
-// 	}
-// 	if count > 0 {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "User has already submitted responses"})
-// 		return
-// 	}
-// 	dbEntry := models.QuizTrack{
-// 		UserID:      userID,
-// 		SnapShot:    resp.Image,
-// 		FlagsRaised: resp.FlagsRaised,
-// 		Marks:       0,
-// 	}
-// 	_, err = db.Quiz_Track.Coll.InsertOne(db.Quiz_Track.Context, dbEntry)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to store response"})
-// 		return
-// 	}
-// 	dbResponses := models.Quiz_Responses{
-// 		UserID:    userID,
-// 		Responses: resp.Responses,
-// 	}
-// 	_, err = db.Quiz_Responses.Coll.InsertOne(db.Quiz_Responses.Context, dbResponses)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to store response in Response Collection"})
-// 		return
-// 	}
-
-// 	c.JSON(http.StatusOK, gin.H{"message": "Submission Successful"})
-// 	go func(userID models.UID) {
-// 		filter := bson.M{
-// 			"userID":  userID,
-// 			"started": true,
-// 		}
-// 		update := bson.M{
-// 			"$set": bson.M{
-// 				"submitted": true,
-// 			},
-// 		}
-
-// 		_, err := db.Updates.Coll.UpdateOne(db.Updates.Context, filter, update)
-// 		if err != nil {
-// 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
-// 			return
-// 		}
-// 		// if res.MatchedCount == 0 {
-// 		// 	c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized Submit"})
-
-// 		// 	return
-// 		// }
-
-// 	}(userID)
-// }
-
-// ------------------------------------------------------------------------------------------------
-
-/*
-Learnt from GPT How to Optimise DB Calls, Using Upsert and Atomicity.
-How useless go routines can be avoided.
-*/
+func init() {
+	shiftsMap, errLoadShifts = LoadAllShifts()
+}
 
 func GetQuizQuestions(c *gin.Context) ([]models.Quiz_Questions, error) {
+	if errLoadShifts != nil {
+		return nil, errors.New("could not load shift timings")
+	}
 	userID, err := login.GetUIDFromSession(c)
 	if err != nil {
 		return nil, err
@@ -154,8 +43,14 @@ func GetQuizQuestions(c *gin.Context) ([]models.Quiz_Questions, error) {
 		return nil, err
 	}
 
-	if uq.Shift != shift {
-		return nil, errors.New("shift does not match")
+	userShift := uq.Shift
+	shiftInfo, ok := shiftsMap[userShift]
+	if !ok {
+		return nil, errors.New("shift info not found")
+	}
+	now := time.Now().In(shiftInfo.Start.Location())
+	if now.Before(shiftInfo.Start) {
+		return nil, errors.New("quiz not started for your shift yet")
 	}
 
 	dbEntry := models.Updates{

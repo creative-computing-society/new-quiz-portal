@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Option struct {
 	Value string `bson:"option_value"`
 	Id    OID    `bson:"option_id"`
@@ -36,13 +38,19 @@ type Form_Responses struct {
 }
 
 type UserQuestions struct {
-	UserID    UID              `bson:"userID"`
-	Shift     int              `bson:"shift"`
-	Questions []Quiz_Questions `bson:"questions"`
+	UserID    UID              `bson:"userID" binding:"required"`
+	Shift     int              `bson:"shift" binding:"required"`
+	Questions []Quiz_Questions `bson:"questions" binding:"required"`
 }
 
 type Updates struct {
 	UserID    UID  `bson:"userID" binding:"required"`
 	Started   bool `bson:"quiz_started" binding:"required"`
 	Submitted bool `bson:"quiz_submitted" binding:"required"`
+}
+
+type Shift struct {
+	Shift int       `bson:"shift" json:"shift" binding:"required"`
+	Date  time.Time `bson:"date"  json:"date"  binding:"required"`
+	Start time.Time `bson:"start_time" json:"start_time" binding:"required"`
 }

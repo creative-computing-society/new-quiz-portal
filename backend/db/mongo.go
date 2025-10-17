@@ -31,6 +31,7 @@ var (
 	Quiz_Track              Collection
 	User_Questions          Collection
 	Updates                 Collection //and now the db architecture has been fucked. UPdates collection honi hi nhi chaiye , but I am in no mood of updating the QuizTrack and its validation all over the code.
+	Shifts                  Collection
 )
 
 func Init() error {
@@ -65,6 +66,7 @@ func Init() error {
 	Quiz_Track = Collection{DATABASE.Collection("quiz_track"), ctx}
 	User_Questions = Collection{DATABASE.Collection("user_questions"), ctx}
 	Updates = Collection{DATABASE.Collection("updates"), ctx}
+	Shifts = Collection{DATABASE.Collection("shift_data"), ctx}
 
 	return nil
 

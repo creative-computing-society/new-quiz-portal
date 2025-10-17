@@ -92,10 +92,15 @@ func main() {
 		authorized_admin.POST("/add-reg-question", admin.HandleAddRegQuestion)
 		authorized_admin.GET("/add-quiz-question", admin.ShowAddQuizQuestion)
 		authorized_admin.POST("/add-quiz-question", admin.AddQuizQuestion)
-		authorized_admin.GET("/reg-responses", admin.ShowRegResponses) // page
+		authorized_admin.GET("/reg-responses", admin.ShowRegResponses)
 		authorized_admin.GET("/api/reg-responses", admin.GetRegResponsesData)
-		authorized_admin.POST("/remove-duplicate-registrations", admin.RemoveDuplicateRegistrations) // data endpoint (JSON)
+		authorized_admin.POST("/remove-duplicate-registrations", admin.RemoveDuplicateRegistrations)
 		authorized_admin.POST("/assign-shifts", admin.AssignShiftsAndQuestions)
+		authorized_admin.POST("/reassign-shift", admin.ReassignShiftAndQuestions)
+		authorized_admin.GET("/set-shift-timing", func(c *gin.Context) {
+			c.HTML(200, "set_shift_timing.html", nil)
+		})
+		authorized_admin.POST("/set-shift-timing", admin.SetShiftTiming)
 	}
 
 	view_admin := router.Group("/admin", admin.ViewAdminMiddleware)
