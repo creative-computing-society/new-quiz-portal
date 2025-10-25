@@ -1,129 +1,94 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../Style/timer.module.css";
 import { useNavigate } from "react-router-dom";
-import config from "../../../config";
+import { loadConfig } from "../../../config";
 
-function Timer({ updateState }) {
+function Timer() {
   const navigate = useNavigate();
-
-  const [days, setDays] = React.useState(0);
-  const [hours, setHours] = React.useState(0);
-  const [minutes, setMinutes] = React.useState(0);
-  const [seconds, setSeconds] = React.useState(0);
-
+  const [config, setConfig] = useState(null);
+  const [deadline, setDeadline] = useState(null);
+  const [days, setDays] = useState(0);
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
   const [message, setMessage] = useState("");
   const [button, setButton] = useState(null);
 
-  const startTest = () => {
-    navigate("/test");
-  };
+  const startTest = () => navigate("/test");
 
-  // Use config times instead of localStorage
-  const now = new Date();
-  const slot1Start = new Date(config.slot1_time);
-  const slot2Start = new Date(config.slot2_time);
+  // Load config dynamically
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const cfg = await loadConfig();
+        setConfig(cfg);
 
-  // Determine which slot to use
-  let deadline;
-  if (now <= new Date(slot1Start.getTime() + config.test_duration * 60 * 1000)) {
-    deadline = slot1Start;
-  } else {
-    deadline = slot2Start;
-  }
+        const now = new Date();
+        const slotKeys = Object.keys(cfg).filter(k => k.startsWith("slot") && k.endsWith("_time"));
+        const slots = slotKeys.map(k => new Date(cfg[k]));
 
-  const getTime = () => {
-    const time = Date.parse(deadline) - Date.now();    
-
-    setDays(Math.max(0,Math.floor(time / (1000 * 60 * 60 * 24))));
-    setHours(Math.max(0,Math.floor((time / (1000 * 60 * 60)) % 24)));
-    setMinutes(Math.max(0,Math.floor((time / 1000 / 60) % 60)));
-    setSeconds(Math.max(0,Math.floor((time / 1000) % 60)));
-  };
-
-
-
-  const timerFinished = () => {
-    // console.log("checking cond")
-
-    navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true
-    })
-    .then((stream) => {
-      setButton(
-        <div><input type="button" value="Start Test" onClick={startTest} className={styles.startTest} /></div>
-      )
-      setMessage("")
-    })
-    .catch((err) => {
-      setMessage("* Give Camera and Microphone access and refresh this page *")
-    });
-  }
-
-
-  React.useEffect(() => {
-    // console.log("entered")
-    navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true
-    })
-    .then((stream) => {
-      setMessage("")
-    })
-    .catch((err) => {
-      setMessage("* Give Camera and Microphone access and refresh this page *")
-    });
-  }, [])
-
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      if(Date.now() - Date.parse(deadline) > -1000){
-        // console.log("timer done")
-        clearInterval(interval)
- 
-
-        timerFinished()
+        // Pick the next slot that hasn't ended
+        const nextSlot = slots.find(slotStart => now <= new Date(slotStart.getTime() + cfg.test_duration * 60 * 1000));
+        if (nextSlot) setDeadline(nextSlot);
+        else setDeadline(null); // All slots ended
+      } catch (err) {
+        console.error("Failed to load config:", err);
+        setMessage("Failed to load test configuration.");
       }
-      getTime()
+    };
 
-    }, 1000);
-
-    return () => clearInterval(interval);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchConfig();
   }, []);
 
+  // Timer countdown
+  useEffect(() => {
+    if (!deadline || !config) return;
+
+    const updateTimer = () => {
+      const timeLeft = Math.max(0, Date.parse(deadline) - Date.now());
+      setDays(Math.floor(timeLeft / (1000 * 60 * 60 * 24)));
+      setHours(Math.floor((timeLeft / (1000 * 60 * 60)) % 24));
+      setMinutes(Math.floor((timeLeft / 1000 / 60) % 60));
+      setSeconds(Math.floor((timeLeft / 1000) % 60));
+
+      if (timeLeft <= 0) {
+        // Timer finished
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+          .then(() => setButton(<input type="button" value="Start Test" onClick={startTest} className={styles.startTest} />))
+          .catch(() => setMessage("* Give Camera and Microphone access and refresh this page *"));
+      }
+    };
+
+    updateTimer(); // Initial calculation
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [deadline, config]);
+
+  // Initial media permission check
+  useEffect(() => {
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      .then(() => setMessage(""))
+      .catch(() => setMessage("* Give Camera and Microphone access and refresh this page *"));
+  }, []);
+
+  if (!config) return <div>Loading configuration...</div>;
+
   return (
-      <div>
-        <div className={styles.timer} role="timer">
-        <div className={styles.col}>
-          <div className={styles.box}>
-            <p id="day">{days < 10 ? "0" + days : days}</p>
-            <span className={styles.text}>Days</span>
+    <div>
+      <div className={styles.timer} role="timer">
+        {[{val: days, label: "Days"}, {val: hours, label: "Hours"}, {val: minutes, label: "Minutes"}, {val: seconds, label: "Seconds"}].map((t, idx) => (
+          <div key={idx} className={styles.col}>
+            <div className={styles.box}>
+              <p>{t.val < 10 ? "0" + t.val : t.val}</p>
+              <span className={styles.text}>{t.label}</span>
+            </div>
           </div>
-        </div>
-        <div className={styles.col}>
-          <div className={styles.box}>
-            <p id="hour">{hours < 10 ? "0" + hours : hours}</p>
-            <span className={styles.text}>Hours</span>
-          </div>
-        </div>
-        <div className={styles.col}>
-          <div className={styles.box}>
-            <p id="minute">{minutes < 10 ? "0" + minutes : minutes}</p>
-            <span className={styles.text}>Minutes</span>
-          </div>
-        </div>
-        <div className={styles.col}>
-          <div className={styles.box}>
-            <p id="second">{seconds < 10 ? "0" + seconds : seconds}</p>
-            <span className={styles.text}>Seconds</span>
-          </div>
-        </div>
+        ))}
       </div>
       {button}
       <div className={styles.message}>{message}</div>
     </div>
   );
-};
-export default Timer
+}
 
+export default Timer;

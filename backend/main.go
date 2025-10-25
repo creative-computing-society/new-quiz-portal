@@ -84,6 +84,7 @@ func main() {
 	router.GET("/admin/login", admin.ShowLogin)
 	router.POST("/admin/login", admin.HandleLogin)
 	router.Static("/static", "./backend/admin_portal/static")
+	router.GET("/quiz/shifts", quiz.GetAppConfig)
 
 	authorized_admin := router.Group("/admin", admin.MainAdminMiddleware)
 	{
@@ -115,6 +116,7 @@ func main() {
 		authorized_user.POST("/register", registerationform.SubmitForm)
 		authorized_user.GET("/quiz/get", quiz.GetQuizQues)
 		authorized_user.POST("/quiz/submit", quiz.SubmitQuiz)
+		// authorized_user.GET("/quiz/shifts", quiz.GetAppConfig)
 	}
 
 	// run on localhost:8080

@@ -23,13 +23,12 @@ var (
 	errLoadShifts error
 )
 
-func init() {
-	shiftsMap, errLoadShifts = LoadAllShifts()
-}
-
 func GetQuizQuestions(c *gin.Context) ([]models.Quiz_Questions, error) {
-	if errLoadShifts != nil {
-		return nil, errors.New("could not load shift timings")
+	if shiftsMap == nil {
+		shiftsMap, errLoadShifts = LoadAllShifts()
+		if errLoadShifts != nil {
+			return nil, errors.New("could not load shift timings")
+		}
 	}
 	userID, err := login.GetUIDFromSession(c)
 	if err != nil {

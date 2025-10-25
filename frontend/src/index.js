@@ -2,14 +2,28 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import { loadConfig } from './config'; 
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+async function bootstrap() {
+  const root = ReactDOM.createRoot(document.getElementById('root'));
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+  try {
+    const cfg = await loadConfig();
+    window.APP_CONFIG = cfg; // optional global
+    root.render(
+      <React.StrictMode>
+        <App config={cfg} />
+      </React.StrictMode>
+    );
+  } catch (err) {
+    console.error('Failed to load config, falling back to defaults', err);
+    const fallbackConfig = { shifts: [], test_duration: 10 };
+    root.render(
+      <React.StrictMode>
+        <App config={fallbackConfig} />
+      </React.StrictMode>
+    );
+  }
+}
+
+bootstrap();

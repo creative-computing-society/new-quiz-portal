@@ -4,7 +4,7 @@ import Header from "./Componenet/Header";
 import CustomWebcam from "./Componenet/camera";
 import clockPicture from "./assets/Clock Circle.svg";
 import { useNavigate } from "react-router-dom";
-import config from '../../config';
+import { loadConfig } from '../../config'; // import the async loader
 
 function subtractTime(date, hours, minutes) {
   const result = new Date(date);
@@ -26,18 +26,16 @@ const QuizPage = () => {
   const [flags, setFlags] = useState(0);
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [config, setConfig] = useState(null);
 
   const handleImageCapture = useCallback(
     async (base64Image) => {
       if (isVerifying) return;
 
       setIsVerifying(true);
-      
       try {
-        // Store the latest captured image for quiz submission
         setCapturedImage(base64Image);
         console.log("Image captured for proctoring");
-        
       } catch (error) {
         console.warn("Failed to process captured image:", error);
       } finally {
@@ -47,57 +45,78 @@ const QuizPage = () => {
     [isVerifying]
   );
 
+  // Load config on mount
   useEffect(() => {
-    const endTime = subtractTime(new Date(shift == 1 ? config.slot1_time : config.slot2_time), 0, -10);
-    const currentTime = new Date();
-    const initialTimeRemaining = Math.floor(
-      (endTime - currentTime) / 1000
-    );
-    if (initialTimeRemaining > 10 * 60) {
-      console.log("good try")
-      navigate("/instructions");
-      return;
-    }
+    const fetchConfig = async () => {
+      try {
+        const cfg = await loadConfig();
+        setConfig(cfg);
+      } catch (err) {
+        console.error("Failed to load config:", err);
+        setError("Unable to load quiz configuration.");
+      }
+    };
+    fetchConfig();
+  }, []);
+
+  // Setup timer & fetch questions once config is loaded
+  useEffect(() => {
+    if (!config) return;
+
+    // Determine slot key dynamically: slot1_time, slot2_time, etc.
+    // Determine which slot to use dynamically
+const slotKey = `slot${shift}_time`;
+const slotStart = new Date(config[slotKey]); // parse ISO string directly
+const testDurationMs = config.test_duration * 60 * 1000;
+
+// Calculate test end time
+const testEnd = new Date(slotStart.getTime() + testDurationMs);
+
+// Current time
+const now = new Date();
+
+// Time remaining in seconds
+let initialTimeRemaining = Math.floor((testEnd - now) / 1000);
+
+// If the test hasn’t started yet, show countdown until start
+let timeUntilStart = Math.floor((slotStart - now) / 1000);
+
+// Decide which to use
+if (now < slotStart) {
+    // Test not started
+    initialTimeRemaining = timeUntilStart;
+} else if (now >= slotStart && now <= testEnd) {
+    // Test active
+    // initialTimeRemaining already correct
+} else {
+    // Test ended
+    initialTimeRemaining = 0;
+}
+
     setTimeRemaining(initialTimeRemaining);
 
+    // Fetch questions
     const fetchQuestions = async () => {
       try {
-        const attempted = await fetch(
-          `${process.env.REACT_APP_BACKEND}/quiz/attempted`,
-          {
-            credentials: "include",
-          }
-        );
+        const attempted = await fetch(`${process.env.REACT_APP_BACKEND}/quiz/attempted`, { credentials: "include" });
         if (attempted.ok) {
-          navigate('/submitted')
+          navigate('/submitted');
           return;
         }
-        const response = await fetch(
-          `${process.env.REACT_APP_BACKEND}/quiz/get`,
-          {
-            credentials: "include",
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        // Image: string
-        // Options: { Id: number[], Value: string }
-        // Question: string
-        // QuestionID: number[]
-        // Shift: number
+
+        const response = await fetch(`${process.env.REACT_APP_BACKEND}/quiz/get`, { credentials: "include" });
+        if (!response.ok) throw new Error("Network response was not ok");
+
         const data = await response.json();
-        const transformedQuestions = data.questions.map((question, index) => {
-          return {
-            _id: index,
-            question: question.Question,
-            options: question.Options.map(opt => opt.Value),
-            backendId: question.QuestionID, // Keep original byte array for submission
-            backendOptions: question.Options, // Keep original options with byte array IDs
-            backendShift: question.Shift,
-            image: question.Image
-          };
-        });
+        const transformedQuestions = data.questions.map((question, index) => ({
+          _id: index,
+          question: question.Question,
+          options: question.Options.map(opt => opt.Value),
+          backendId: question.QuestionID,
+          backendOptions: question.Options,
+          backendShift: question.Shift,
+          image: question.Image
+        }));
 
         setQuestions(transformedQuestions);
       } catch (error) {
@@ -106,90 +125,67 @@ const QuizPage = () => {
     };
 
     fetchQuestions();
-  }, []);
+  }, [config, navigate, shift]);
 
+  // Timer countdown
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeRemaining((prevTime) => {
-        if (prevTime <= 0) {
+      setTimeRemaining(prev => {
+        if (prev <= 0) {
           clearInterval(timer);
-          if (!hasSubmitted) {
-            handleSubmit();
-            setHasSubmitted(true);
-          }
+          if (!hasSubmitted) handleSubmit();
+          setHasSubmitted(true);
           return 0;
         }
-        return prevTime - 1;
+        return prev - 1;
       });
     }, 1000);
-
     return () => clearInterval(timer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps  
-  }, [hasSubmitted, handleImageCapture]);
+  }, [hasSubmitted]);
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds
-      .toString()
-      .padStart(2, "0")}`;
+    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   const handleAnswerChange = (questionId, selectedOption) => {
-    setAnswers((prev) => ({ ...prev, [questionId]: selectedOption }));
+    setAnswers(prev => ({ ...prev, [questionId]: selectedOption }));
   };
 
   const handleSubmit = async () => {
     try {
-
-      // Transform answers to match backend expectations
       const responses = Object.entries(answers).map(([questionId, answerValue]) => {
         const question = questions.find(q => q._id.toString() === questionId);
         if (!question) return null;
-        
-
         const selectedOption = question.backendOptions.find(opt => opt.Value === answerValue);
         if (!selectedOption) return null;
-        
-        // Backend expects Quiz_Answer format with byte array IDs
-        return {
-          QuestionID: question.backendId, // Byte array format
-          Answer: selectedOption.Id       // Byte array format for option ID
-        };
+        return { QuestionID: question.backendId, Answer: selectedOption.Id };
       }).filter(Boolean);
 
-      // Form_Responses structure according to swagger docs
       const submissionData = {
-        Image: capturedImage, // Use the latest captured image
+        Image: capturedImage,
         Responses: responses,
-        FlagsRaised: flags,
+        FlagsRaised: flags
       };
 
-      console.log(submissionData);
-      console.log(`Mkc teri ${flags} baar`);
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND}/quiz/submit`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(submissionData),
-        }
-      );
+      const response = await fetch(`${process.env.REACT_APP_BACKEND}/quiz/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(submissionData)
+      });
 
-      
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Submission failed");
       }
-      
+
       const result = await response.json();
       console.log("Submission successful:", result);
       navigate("/submitted");
     } catch (error) {
-      setError(`Retry in 30 seconds`);
+      setError("Retry in 30 seconds");
     }
   };
 
@@ -206,25 +202,15 @@ const QuizPage = () => {
   };
 
   const handleClear = (id) => {
-    setAnswers((prev) => {
-      const newAnswers = { ...prev };
-      delete newAnswers[id];
-      return newAnswers;
-    });
-
-    setMarkedForReview((prev) => {
-      const newMarkedForReview = { ...prev };
-      delete newMarkedForReview[id];
-      return newMarkedForReview;
-    });
+    setAnswers(prev => { const n = { ...prev }; delete n[id]; return n; });
+    setMarkedForReview(prev => { const n = { ...prev }; delete n[id]; return n; });
   };
 
   const handleMarkForReview = (questionId) => {
-    setMarkedForReview((prev) => ({
-      ...prev,
-      [questionId]: !prev[questionId],
-    }));
+    setMarkedForReview(prev => ({ ...prev, [questionId]: !prev[questionId] }));
   };
+
+  if (!config) return <div>Loading configuration...</div>;
 
   return (
     <div ref={pageRef}>
@@ -233,35 +219,21 @@ const QuizPage = () => {
         {/* Sidebar */}
         <div className="w-1/4 bg-white p-6 shadow-lg h-screen fixed left-0">
           <div className="mb-6 bg-[#F7F9FA] rounded-md flex gap-x-3 py-1 pl-2">
-            <img
-              src={clockPicture}
-              alt="clock"
-              draggable={false}
-              onContextMenu={(e) => e.preventDefault()}
-            />
-            <p className="text-2xl font-bold text-[#101828] w-max select-none">
-              {formatTime(timeRemaining)}
-            </p>
+            <img src={clockPicture} alt="clock" draggable={false} onContextMenu={(e) => e.preventDefault()} />
+            <p className="text-2xl font-bold text-[#101828] w-max select-none">{formatTime(timeRemaining)}</p>
           </div>
-          
           <div>
             <div className="space-y-2">
               <div className="flex items-center">
-                <div
-                  className={`w-5 h-5 rounded-full ${statusColors.attempted} mr-2`}
-                ></div>
+                <div className={`w-5 h-5 rounded-full ${statusColors.attempted} mr-2`}></div>
                 <span>Attempted</span>
               </div>
               <div className="flex items-center">
-                <div
-                  className={`w-5 h-5 rounded-full ${statusColors.unattempted} mr-2`}
-                ></div>
+                <div className={`w-5 h-5 rounded-full ${statusColors.unattempted} mr-2`}></div>
                 <span>Unattempted</span>
               </div>
               <div className="flex items-center">
-                <div
-                  className={`w-5 h-5 rounded-full ${statusColors.review} mr-2`}
-                ></div>
+                <div className={`w-5 h-5 rounded-full ${statusColors.review} mr-2`}></div>
                 <span>Mark For Review</span>
               </div>
             </div>
@@ -271,9 +243,7 @@ const QuizPage = () => {
               {questions.map((question, index) => (
                 <div
                   key={question._id}
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${
-                    statusColors[getQuestionStatus(question._id)]
-                  }`}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${statusColors[getQuestionStatus(question._id)]}`}
                 >
                   {index + 1}
                 </div>
@@ -281,9 +251,7 @@ const QuizPage = () => {
             </div>
           </div>
           <div>
-            <div className="container">
-              <CustomWebcam onImageCapture={handleImageCapture} flag={() => setFlags(flags + 1)} />
-            </div>
+            <CustomWebcam onImageCapture={handleImageCapture} flag={() => setFlags(flags + 1)} />
           </div>
         </div>
 

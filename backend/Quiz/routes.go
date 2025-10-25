@@ -2,8 +2,13 @@ package quiz
 
 import (
 	"net/http"
+	"os"
+	"strconv"
 
+	models "ccs.quizportal/Models"
+	"ccs.quizportal/db"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // @Summary      Submit quiz response
@@ -44,4 +49,33 @@ func GetQuizQues(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"questions": questions})
 
+}
+
+func GetAppConfig(c *gin.Context) {
+	cur, err := db.Shifts.Coll.Find(db.Shifts.Context, bson.M{})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to query shifts"})
+		return
+	}
+	defer cur.Close(db.Shifts.Context)
+
+	var shifts []models.Shift
+	for cur.Next(db.Shifts.Context) {
+		var s models.Shift
+		if err := cur.Decode(&s); err == nil {
+			shifts = append(shifts, s)
+		}
+	}
+
+	testDuration := 80
+	if v := os.Getenv("TEST_DURATION"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			testDuration = n
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"shifts":        shifts,
+		"test_duration": testDuration,
+	})
 }
