@@ -32,6 +32,14 @@ services:
       - "3000:80"
     depends_on:
       - backend
+  main_portal:
+    build: ./frontend
+    container_name: main-quiz-frontend
+    restart: always
+    ports:
+      - "3021:80"
+    depends_on:
+      - backend
 
 volumes:
   mongo-data:
