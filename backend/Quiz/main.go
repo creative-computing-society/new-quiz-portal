@@ -158,3 +158,28 @@ func RecieveResponse(c *gin.Context) {
 		}
 	}(userID)
 }
+
+func IsSubmitted(c *gin.Context) {
+	userID, err := login.GetUIDFromSession(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	var result struct {
+		Submitted bool `bson:"quiz_submitted"`
+	}
+	err = db.Updates.Coll.FindOne(
+		db.Updates.Context,
+		bson.M{"userID": userID},
+		options.FindOne().SetProjection(bson.M{"quiz_submitted": 1, "_id": 0}),
+	).Decode(&result)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "not found"})
+		return
+	}
+	if result.Submitted {
+		c.JSON(http.StatusOK, gin.H{"submitted": true})
+	} else {
+		c.JSON(http.StatusNotFound, gin.H{"submitted": false})
+	}
+}

@@ -117,6 +117,7 @@ func main() {
 		authorized_user.GET("/quiz/get", quiz.GetQuizQues)
 		authorized_user.POST("/quiz/submit", quiz.SubmitQuiz)
 		// authorized_user.GET("/quiz/shifts", quiz.GetAppConfig)
+		authorized_user.POST("/quiz/submitted", quiz.IsSubmitted)
 	}
 
 	// run on localhost:8080
