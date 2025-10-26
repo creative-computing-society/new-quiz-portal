@@ -58,7 +58,7 @@ func main() {
 	router.LoadHTMLGlob("admin_portal/templates/*")
 	router.GET("/health", checkHealth)
 	router.GET("/verify", login.Verify_token)
-	router.GET("/checkRegistered", registerationform.CheckRegistered)
+	router.GET("/checkRegistered", registerationform.Check_Registered)
 
 	router.GET("/auth/google", login.HandleAuth)
 
@@ -121,9 +121,9 @@ func main() {
 	}
 
 	// run on localhost:8080
-	router.Run(":8080")
+	// router.Run(":8080")
 
-	// router.Run("0.0.0.0:2117")
+	router.Run("0.0.0.0:2117")
 }
 
 func checkHealth(c *gin.Context) {

@@ -7,7 +7,8 @@ import (
 	login "ccs.quizportal/Login"
 	"ccs.quizportal/db"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func SubmitForm(c *gin.Context) {
@@ -24,23 +25,25 @@ func GetAllQues(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"regQuestions": questions})
 }
 
-func CheckRegistered(c *gin.Context) {
-	uid, err := login.GetUIDFromSession(c)
+func Check_Registered(c *gin.Context) {
+	userID, err := login.GetUIDFromSession(c)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		c.JSON(http.StatusUnauthorized, gin.H{"registered": false, "error": "unauthorized"})
 		return
 	}
 
-	filter := bson.M{"userID": uid}
-	count, err := db.Registeration_Responses.Coll.CountDocuments(db.Registeration_Responses.Context, filter)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
-		return
-	}
+	filter := map[string]interface{}{"userID": userID}
+	err = db.Registeration_Responses.Coll.FindOne(
+		db.Registeration_Responses.Context,
+		filter,
+		options.FindOne().SetProjection(map[string]interface{}{"_id": 1}),
+	).Err()
 
-	if count > 0 {
+	if err == nil {
 		c.JSON(http.StatusOK, gin.H{"registered": true})
-	} else {
+	} else if err == mongo.ErrNoDocuments {
 		c.JSON(http.StatusOK, gin.H{"registered": false})
+	} else {
+		c.JSON(http.StatusInternalServerError, gin.H{"registered": false, "error": "db error"})
 	}
 }
