@@ -85,7 +85,6 @@ func main() {
 	router.POST("/admin/login", admin.HandleLogin)
 	router.Static("/static", "./backend/admin_portal/static")
 	router.GET("/quiz/shifts", quiz.GetAppConfig)
-	router.GET("/calcScore",quiz.GetScores)
 
 	authorized_admin := router.Group("/admin", admin.MainAdminMiddleware)
 	{
@@ -103,7 +102,7 @@ func main() {
 			c.HTML(200, "set_shift_timing.html", nil)
 		})
 		authorized_admin.POST("/set-shift-timing", admin.SetShiftTiming)
-		// authorized_admin.GET("/calcScore",quiz.GetScores)
+		authorized_admin.GET("/calcScore",quiz.GetScores)
 	}
 
 	view_admin := router.Group("/admin", admin.ViewAdminMiddleware)
