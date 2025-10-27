@@ -51,6 +51,15 @@ func GetQuizQues(c *gin.Context) {
 
 }
 
+func GetScores(c *gin.Context) {
+	err := CalcScore()
+	if(err!=nil){
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"nhi hua score calc :/ "})
+		return
+	}
+	c.JSON(http.StatusAccepted,gin.H{"success":"Scores have been updated in the db yayayay"})
+}
+
 func GetAppConfig(c *gin.Context) {
 	cur, err := db.Shifts.Coll.Find(db.Shifts.Context, bson.M{})
 	if err != nil {

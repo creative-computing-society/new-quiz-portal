@@ -1,12 +1,12 @@
 package quiz
 
 import (
-	"fmt"
 	"log"
 
 	models "ccs.quizportal/Models"
 	"ccs.quizportal/db"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func CalcScore() error {
@@ -50,8 +50,22 @@ func CalcScore() error {
 				score = score - 1
 			}
 		}
-		fmt.Println("id: ", *response.UserID)
-		fmt.Println("score: ", score)
+		// fmt.Println("id: ", *response.UserID)
+		// fmt.Println("score: ", score)
+
+		filter := bson.M{"userID": *response.UserID}
+		update := bson.M{"$set": bson.M{"marks": score}}
+
+		opts := options.Update().SetUpsert(true)
+		_, err := db.Quiz_Track.Coll.UpdateOne(ctx, filter, update, opts)
+		if err != nil {
+			log.Printf("failed to update marks for user %v: %v\n", *response.UserID, err)
+			continue
+		}
+		
+		if err := respCursor.Err(); err != nil {
+		return err
+		}
 	}
 	return nil
 }
